@@ -9,6 +9,15 @@ on:
       - '.github/workflows/docs.yml'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,17 +34,25 @@ jobs:
       - name: Build docs
         run: npm run docs:build
 
-      - name: Upload docs artifact
+      - name: Upload local artifact (for manual download)
         uses: actions/upload-artifact@v4
         with:
           name: carrot-clash-docs
           path: docs/.vitepress/dist
           retention-days: 30
 
-      - name: Print view instructions
-        run: |
-          echo "Docs built successfully."
-          echo "To view: download the artifact, extract it, then run:"
-          echo "  npx serve . --single"
-          echo "  (or: python3 -m http.server 8080)"
-          echo "Then open http://localhost:8080"
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/.vitepress/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
