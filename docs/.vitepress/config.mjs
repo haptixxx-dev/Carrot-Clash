@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'Carrot Clash',
   description: 'Game Design Documentation',
-  base: '/Carrot-Clash/',
+  base: '/',
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
