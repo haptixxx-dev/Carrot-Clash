@@ -1,0 +1,41 @@
+name: Build Docs
+
+on:
+  push:
+    branches: [main, release]
+    paths:
+      - 'docs/**'
+      - 'package.json'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build docs
+        run: npm run docs:build
+
+      - name: Upload docs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: carrot-clash-docs
+          path: docs/.vitepress/dist
+          retention-days: 30
+
+      - name: Print view instructions
+        run: |
+          echo "Docs built successfully."
+          echo "To view: download the artifact, extract it, then run:"
+          echo "  npx serve . --single"
+          echo "  (or: python3 -m http.server 8080)"
+          echo "Then open http://localhost:8080"
