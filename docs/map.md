@@ -1,5 +1,18 @@
 # Map Design — The Grand Food Market
 
+<span class="cc-status pending">Editor-pending</span> The map geometry, grey-box, art, and NavMesh are all editor-authored content and do not exist yet. **However, every gameplay system this map drives is implemented in code** (`Assets/_Game/`): capture zones, the Zone C unlock, spawn selection with the safety redirect, destructible cover, vision-obscuring volumes, and per-zone ambient audio. This page reconciles the design with the shipped code and flags the deltas. See [/dev/getting-started](/dev/getting-started) and `Assets/_Game/CONTRACTS.md` for the engineering source of truth.
+
+::: info Map components → code map
+- Capture points → `Gameplay/Objectives/CaptureZone.cs` (`ZoneId` from `Shared/GameEnums.cs`)
+- Zone C unlock timer → `GameConstants.ZoneCUnlockTime` + `GameModeManager`
+- Spawns + safety redirect → `Gameplay/Map/SpawnManager.cs` (`SpawnPoint` markers)
+- Destructible stalls/shields → `Gameplay/DestructibleCover.cs`
+- Spore-cloud sightline denial → `Gameplay/VisionObscured.cs`
+- Per-zone ambience → `Audio/AmbientZone.cs`
+
+What's missing is purely **scene content**: someone must place the `CaptureZone`, `SpawnPoint`, `AmbientZone`, and cover prefabs in the `Gameplay_Market` scene and bake the NavMesh.
+:::
+
 ---
 
 ## Theme
@@ -54,6 +67,18 @@ The environment is mechanical: cover objects are themed to the class colours (or
 
 ## Zone Breakdown
 
+<span class="cc-status built">Implemented</span> Capture behaviour for all three zones lives in `CaptureZone.cs`. The per-zone defaults below (`captureRadius`, `captureSeconds`, `scoreTickRate`, `lockUntilMatchTime`) are serialized fields on that component and match the numbers in this doc exactly. They become live once a designer drops a configured `CaptureZone` into the gameplay scene.
+
+::: info Code adds capture nuance not in the design tables
+The shipped `CaptureZone` implements two behaviours the original flat tables don't spell out:
+
+- **Multi-capper speedup** — each extra teammate inside the radius adds `perPlayerSpeedup` (0.5 = +50% of base rate, diminishing), clamped to `maxSpeedup` (2.5×). So "Capture time (1 player)" below is the *solo* time; a stacked team captures faster, up to 2.5× quicker.
+- **Contest = freeze, then chip-down** — while both teams stand in the zone, progress freezes (and the eventual capture is flagged *contested*, worth +15 instead of +10). A contesting enemy must first chip an owner's progress back to 0 before their own capture begins.
+- **Flat (horizontal) distance** is used for occupancy so the raised Zone C platform is judged fairly regardless of height.
+
+Capture-completion score: neutral→team = `10`, contested→team = `15` (`GameConstants`).
+:::
+
 ### Zone A — The Courtyard
 
 | Property | Value |
@@ -64,6 +89,8 @@ The environment is mechanical: cover objects are themed to the class colours (or
 | Capture time (1 player) | 10s |
 | Score tick rate | 1 pt/s |
 | Key cover | 8 destructible market stalls (80 HP each), 4 produce carts (permanent) |
+
+> Destructible stalls map to `DestructibleCover.cs`, whose default HP pool is `80` — matches the design. The component shatters (self-destructs + plays `impact_surface` SFX + optional VFX) at 0 HP.
 
 **Sightlines:** 3 main lanes separated by stall rows. Removing a stall opens a lane entirely — Jalapeño shutting down a lane with Heat Trail is a key zone A tactic.
 
@@ -119,6 +146,10 @@ The environment is mechanical: cover objects are themed to the class colours (or
 
 **Barrier unlock:** Physical barrier objects lower at second 300; global audio announcement ("The Stage is open!") plays for all players; HUD flashes Zone C icon.
 
+> Code: a `CaptureZone` with `lockUntilMatchTime = 300` (`GameConstants.ZoneCUnlockTime`) stays inert until `GameModeManager.ElapsedTime` crosses 300s, then fires `GameEvents.RaiseZoneCUnlocked()` (HUD + audio listen for it). `scoreTickRate` is `2` here vs `1` for A/B — confirmed in both doc and code. The physical barrier mesh and the unlock SFX/announcement are editor-pending; the event that triggers them is wired.
+
+> Info-play note (Carrot from Zone A): `Ability_RadarPulse` ships with a 15m scan radius and 2.5s reveal, so the rooftop-sightline call-out above is supported by the actual ability values.
+
 ---
 
 ## Flanking Routes
@@ -129,9 +160,17 @@ The environment is mechanical: cover objects are themed to the class colours (or
 | Rooftop Catwalk | Zone A roof ↔ Zone C (one-way drop) | ~8s | High | Exposed overhead; one-way (drop only — can't return this way); Carrot Dash can skip part of the route |
 | Underground Cellar | Zone B basement ↔ Zone C underside stairs | ~10s | Low | Slow; sound-dampened (quiet footsteps here regardless of class); ideal for Potato or surprise push |
 
+::: details Code note — footsteps & sightline denial
+The cellar's stealth feel rides on the footstep system: `SurfaceType.Dirt` (`GameEnums.cs`) is the cellar's surface category, resolved per-collider by `FootstepBank`. The route's "quiet regardless of class" claim is a **design intent for the surface/material setup** — there's no route-based code that further dampens footsteps; Carrot's separate `Passive_SilentSteps` is the class-level stealth.
+
+Sightline denial along these routes (e.g. Broccoli's Spore Cloud) is backed by `VisionObscured.cs`: standing in a cloud suppresses reveals (Radar Pulse, blips, outlines) via a reference count so overlapping clouds behave correctly.
+:::
+
 ---
 
 ## Spawn Points
+
+<span class="cc-status partial">Partial</span> Spawn *logic* is fully implemented in `SpawnManager.cs` (respawn timing, fixed-spawn selection, the contest check, the safe-teammate fallback, and invulnerability windows). It's marked Partial because it needs `SpawnPoint` marker objects placed in the gameplay scene (the staggered positions behind cover described below) before it does anything — with zero spawn points it falls back to world origin.
 
 ### Team A Spawn
 - 3 staggered spawn positions behind a stone archway (prevents spawn kill line)
@@ -147,9 +186,23 @@ The environment is mechanical: cover objects are themed to the class colours (or
 ### Spawn Safety Rule
 If a spawn position has an enemy within 10m, the spawning player is redirected to the nearest safe teammate position. If no safe position exists, spawn delay extends by 1s and the player spawns at the safe fixed position with 3s invulnerability.
 
+The shipped `SpawnManager.ChooseSpawn` runs this exact cascade:
+
+- **Respawn delay** — `RespawnTime = 4s` before spawn selection begins.
+- **Try a fixed spawn** — first uncontested team spawn point, where "contested" = an enemy within `SpawnContestRadius = 10m`.
+- **Else nearest safe teammate** — only teammates within `SafeTeammateRadius = 30m` (and themselves uncontested) qualify; the player drops in just behind that ally.
+- **Else fallback** — a fixed spawn anyway, with `+1s` extra delay and `3s` invulnerability.
+- **Default invulnerability** otherwise is `SpawnInvulnerability = 2s` (matches the 2s on-entry invuln above).
+
+::: info Delta vs. design
+The doc says "nearest safe teammate position" without bounding it — the code caps that search at **30m** (`SafeTeammateRadius`). This is a code-only constant; it tightens the rule so you can't be flung across the map. Everything else (10m contest radius, +1s/3s fallback, 2s normal invuln) matches the design verbatim.
+:::
+
 ---
 
 ## Audio Landmarks
+
+<span class="cc-status partial">Partial</span> The mechanism is built: `AmbientZone.cs` is a trigger volume that starts/stops a per-zone ambient loop through the pooled `AudioManager`, with a ~1.5s crossfade grace so crossing a boundary doesn't hard-cut the bed. Drop one `AmbientZone` per zone (with the right `ambientKey`) and the table below works. It's Partial because the actual ambient *clips* are editor-pending — see [/dev/assets](/dev/assets).
 
 Spatial audio helps players build a mental map of the level — each zone has a distinct ambient layer:
 
@@ -166,6 +219,8 @@ Spatial audio helps players build a mental map of the level — each zone has a 
 ---
 
 ## Existing Assets Integration
+
+<span class="cc-status pending">Editor-pending</span> These third-party packages are the intended building blocks for the scene; the geometry, lighting, and UI overlays that use them are all editor-authored and not built yet. See [/dev/assets](/dev/assets) for the current asset inventory and import status.
 
 | Asset | Usage |
 |---|---|

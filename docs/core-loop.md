@@ -1,10 +1,20 @@
 # Core Loop
 
+::: info CODE STATUS
+The full core-loop logic is implemented in C# (`CarrotClash` namespace) and verified against this doc. What is **editor-pending** is the content that brings it to life: the gameplay scene, the capture-zone / spawn-point placement, audio cues, and HUD canvases. Numbers below have been reconciled against the shipped code — see the `GameConstants.cs` references throughout. Engineers should start at [/dev/getting-started](/dev/getting-started) and treat `Assets/_Game/CONTRACTS.md` as the frozen API.
+:::
+
 ## Match State Machine
+
+<span class="cc-status built">Implemented</span> — `GameModeManager.cs` owns the state machine; states in `GameEnums.cs` (`MatchState`).
 
 ```
 LOBBY → CLASS_SELECT → COUNTDOWN → MATCH_ACTIVE → SUDDEN_DEATH* → MATCH_END → POST_MATCH
 ```
+
+::: info CODE vs DESIGN
+The shipped `MatchState` enum is `Lobby, ClassSelect, Countdown, MatchActive, SuddenDeath, MatchEnd, PostMatch` — exactly the flow above. In single-machine/offline play `GameModeManager.BeginMatchFlow()` starts the coroutine at `ClassSelect` (the `Lobby` hold is a networking concern handled by the dormant `ConnectionManager` / `GameModeNetworkManager`, behind `#if NETCODE_PRESENT`). All durations below come from `GameConstants.cs`.
+:::
 
 | State | Duration | Notes |
 |---|---|---|
@@ -16,9 +26,13 @@ LOBBY → CLASS_SELECT → COUNTDOWN → MATCH_ACTIVE → SUDDEN_DEATH* → MATC
 | `MATCH_END` | Instant | Triggers on score cap (500) or timer expiry |
 | `POST_MATCH` | 15s auto-advance, can skip | XP awarded, MVP displayed, rematch vote |
 
+All seven durations/caps are pulled from `GameConstants.cs` (`MatchDuration = 480`, `SuddenDeathDuration = 60`, `CountdownDuration = 5`, `ClassSelectDuration = 30`, `PostMatchDuration = 15`, `ScoreCap = 500`) — the doc and code agree.
+
 ---
 
 ## Match Structure
+
+<span class="cc-status built">Implemented</span> — orchestrated by `GameModeManager.MatchFlow()`; <span class="cc-status pending">Editor-pending</span> for spawn-point and zone placement in `Gameplay_Market`.
 
 1. **Class select** — 30s to pick class; server locks selection; duplicate classes allowed
 2. **Drop in** — teams spawn on opposite ends (Spawn A, Spawn B), 60m apart
@@ -31,15 +45,23 @@ LOBBY → CLASS_SELECT → COUNTDOWN → MATCH_ACTIVE → SUDDEN_DEATH* → MATC
 
 ## Respawn System
 
+<span class="cc-status built">Implemented</span> — `SpawnManager.cs` (respawn timing, contest check, safety redirect). <span class="cc-status pending">Editor-pending</span>: `SpawnPoint` placement behind cover, death-camera rig.
+
 - **Respawn time:** 4 seconds flat (no scaling, no penalty for streak)
 - **Respawn invulnerability:** 2 seconds after spawn; player can move but cannot be damaged
 - **Spawn protection logic:** players spawn at their team's fixed spawn point unless it is being actively contested (within 10m of an enemy) — in that case, respawn at the nearest safe teammate within 30m, or fixed spawn with a 1s extra delay
 - **Death camera:** spectate killer or nearest alive teammate for the 4s respawn duration
 - **No spawn kill design:** fixed spawns are behind geometric cover; enemies must actively push to reach them
 
+::: info CODE vs DESIGN
+`SpawnManager.ChooseSpawn()` matches the design: (1) first uncontested team spawn, (2) else nearest safe teammate within `SafeTeammateRadius = 30m` (spawned ~2m behind them), (3) else fixed spawn with `extraDelay = 1s` **and** `invuln = 3s` (vs the standard `SpawnInvulnerability = 2s`). The extended 3s invuln on the contested-fallback path is a code detail the original doc only implied — call it out for playtesters. The death-camera spectate behaviour is a design target; the camera rig itself is editor-pending.
+:::
+
 ---
 
 ## Team Composition
+
+<span class="cc-status built">Implemented</span> — team caps in `GameConstants.cs` (`MaxPlayersPerTeam = 4`, `MaxPlayers = 8`); duplicate classes allowed (`ClassSelectController`). Matchmaking floor (3v3) is a networking policy and is editor/backend-pending.
 
 - **Team size:** 3v3 (min viable match) or 4v4 (standard)
 - **Duplicate classes:** allowed — no hard lock
@@ -49,6 +71,8 @@ LOBBY → CLASS_SELECT → COUNTDOWN → MATCH_ACTIVE → SUDDEN_DEATH* → MATC
 ---
 
 ## Score System
+
+<span class="cc-status built">Implemented</span> — values in `GameConstants.cs`; awarded by `CaptureZone.cs` (ticks/captures) and `GameModeManager.HandleKillScore` (kills, tier-aware). The score table below matches the code exactly.
 
 | Event | Score | Notes |
 |---|---|---|
@@ -76,6 +100,8 @@ At 4v4 with 50% zone control:
 
 ## Feedback Loops (Addiction Architecture)
 
+<span class="cc-status partial">Partial</span> — the mechanics exist (momentum tiers in `MomentumController`, capture progress in `CaptureZone`, kill feed/HUD widgets in `UI/HUD/`, progression in `Progression/`). The VFX, animated counters, and audio that make them *feel* satisfying are <span class="cc-status pending">Editor-pending</span> (art/audio/canvases not yet authored).
+
 These are deliberately designed to create the "one more game" pull:
 
 ### Within a Match
@@ -95,6 +121,8 @@ These are deliberately designed to create the "one more game" pull:
 
 ## Match Timer
 
+<span class="cc-status built">Implemented</span> — `GameModeManager.Tick()` drives the timer, the Zone C unlock cue, and the 1-minute / 30-second warnings. <span class="cc-status pending">Editor-pending</span>: the announcement audio clips (`zone_c_unlock`, `warn_1min`, `warn_30s`) and the HUD flash.
+
 | Time | Event |
 |---|---|
 | 0:00 | Match start; Zones A and B contestable |
@@ -108,12 +136,18 @@ These are deliberately designed to create the "one more game" pull:
 
 ## End State
 
-- **Win/Loss/Draw** — draw only possible if sudden death also ends tied (rare)
+<span class="cc-status built">Implemented</span> — `MatchStats.cs` (MVP / Hot Streak / per-player stats), `GameModeManager.EndMatch`, `PostMatchController.cs`. <span class="cc-status pending">Editor-pending</span>: the post-match UI canvas, animated XP breakdown, and rematch-vote networking.
+
+- **Win/Loss/Draw** — draw only possible if sudden death also ends tied (rare). `GameModeManager.SuddenDeath()` ends in `Team.None` (draw) if still tied after 60s.
 - **Post-match screen shows:**
   - Final scores (both teams), winner banner
-  - MVP card: player with highest total score contribution (kills + objective time)
-  - Hot Streak award: player with the longest unbroken momentum tier 3 duration
+  - MVP card: player with the highest score contribution
+  - Hot Streak award: player with the longest unbroken momentum tier 3 duration (`PlayerStats.LongestOnFireStreak`)
   - Personal stats: kills, assists, deaths, objective time, damage dealt
   - XP earned (animated breakdown)
   - Battle pass progress update
   - "Rematch" vote + "Play Again" + "Main Menu"
+
+::: info CODE vs DESIGN
+The shipped MVP metric (`PlayerStats.ScoreContribution`) is `Kills × 5 + Assists × 2 + round(ObjectiveTime)` — i.e. it also folds in **assists**, where the original doc said only "kills + objective time". Hot Streak resolution (`MatchStats.ResolveHotStreak`) returns no winner when nobody reached tier 3, so the award can be absent in low-momentum matches.
+:::

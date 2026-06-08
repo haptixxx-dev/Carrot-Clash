@@ -1,10 +1,22 @@
 # Weapons
 
+<span class="cc-status built">Implemented</span> <span class="cc-status pending">Editor-pending</span>
+
 Each class has one fixed primary weapon and access to a shared secondary pistol. Weapons are hitscan (no projectile travel time) to keep feel snappy at the match's pace.
+
+::: info Build status
+The hitscan weapon system is implemented and verified in code: `Assets/_Game/Weapons/WeaponController.cs` (fire timing for full-auto / semi / burst, spread, falloff, headshots, reload, ADS, weapon swap, recoil + camera-kick hooks) reading static config from `Assets/_Game/Weapons/Data/WeaponDataSO.cs`. Every stat below is the value the shipped code uses — the five weapon assets are authored by the editor menu **Carrot Clash → Generate Default Data Assets** (`Assets/_Game/Editor/DataAssetGenerator.cs`), which is the source of truth for the numbers here and is *not* committed. <span class="cc-status pending">Editor-pending</span>: the player prefab, muzzle transform, VFX/audio clips and recoil-pattern tuning are authored in-editor.
+
+API is frozen in `Assets/_Game/CONTRACTS.md`. Engineers should start at [/dev/getting-started](/dev/getting-started).
+:::
 
 ---
 
 ## Primary Weapons
+
+<span class="cc-status built">Implemented</span> <span class="cc-status pending">Editor-pending</span>
+
+All four primary stat blocks below match the authored `WeaponDataSO` assets exactly (verified against `DataAssetGenerator.cs`). Pending in-editor: muzzle VFX, fire/reload audio clips, and recoil-pattern polish.
 
 ### Carrot — SMG "The Nub"
 
@@ -99,6 +111,8 @@ Each class has one fixed primary weapon and access to a shared secondary pistol.
 
 ## Secondary Weapon (All Classes)
 
+<span class="cc-status built">Implemented</span>
+
 ### Pistol "The Pip"
 
 | Stat | Value |
@@ -112,40 +126,67 @@ Each class has one fixed primary weapon and access to a shared secondary pistol.
 
 **Design note:** The Pip is a backup, not a primary alternative. 2× headshot multiplier makes it a legitimate threat at close range for skilled players (3 headshots = 168 damage — kills any class). Switching to pistol is faster than reloading (0.2s swap vs. 1.8–3.5s reload).
 
+::: info Code reconciliation — swap behaviour
+`WeaponController.SwapWeapon()` toggles primary ↔ pistol with the documented `WeaponSwapTime = 0.2f` gate. Note one simplification in the current build: each swap-in refills the incoming weapon's magazine to full rather than persisting per-weapon ammo state across swaps. This keeps the pistol a clean panic option; persistent per-weapon mags are an open tuning decision if it proves too forgiving.
+:::
+
 ---
 
 ## Combat Feel Targets
+
+<span class="cc-status built">Implemented</span> <span class="cc-status partial">Partial</span>
 
 | Parameter | Target value | Reference |
 |---|---|---|
 | Hitscan confirmation delay | ≤ 1 frame (16ms) | Valorant-level crispness |
 | Crosshair spread recovery | 200ms after shot | Tight — rewards burst firing |
-| ADS zoom | 1.3× FOV reduction | Not a sniper — just focus |
+| ADS zoom | 90° → 85° FOV | Not a sniper — just focus |
 | ADS time | 0.15s | Fast; no "scoped" delay feel |
 | Weapon sway | Subtle only; cancels on ADS | |
 | Recoil model | Pattern-based, learnable | Apex-style, not random |
 | Kill confirmation | Hit-stop 1 frame + audio crack | Satisfying feedback |
 
+::: info Code reconciliation
+- **Spread recovery** (`GameConstants.CrosshairRecovery = 0.2f`), **ADS time** (`AdsTime = 0.15f`) and **weapon swap** (`WeaponSwapTime = 0.2f`) match the design exactly.
+- **ADS zoom**: the original "1.3× FOV reduction" is now concrete in code — `DefaultFov = 90°` narrows to `AdsFov = 85°` (`GameConstants.cs`), a focus nudge rather than a true scope. Sprint widens to `96°`.
+- **Recoil** is <span class="cc-status partial">Partial</span>: `WeaponDataSO.recoilPattern` (deterministic, learnable per-weapon arrays) and per-shot `cameraKick` exist and are applied via `WeaponController.ApplyRecoil()`, but the pattern is currently only consumed as a minimal camera nudge — full pitch/yaw walk-up is editor-tuning work. Hit-stop / hit markers route through the feedback layer (`Assets/_Game/UI/Feedback/`, `HitMarkerUI`).
+:::
+
 ---
 
 ## Damage Falloff
 
-All weapons lose damage beyond effective range:
+<span class="cc-status built">Implemented</span>
+
+All weapons lose damage beyond effective range. The step curve lives in `GameConstants` and is applied by `WeaponDataSO.FalloffMultiplier()`:
 
 ```
-[0 → effective_range]    = full damage
-[+5m]                    = -10%
-[+10m]                   = -25%
-[+15m]                   = -45%
-[+20m+]                  = -60% (min floor)
+[0 → effective_range]    = full damage   (×1.00)
+[+5m]                    = -10%          (×0.90)
+[+10m]                   = -25%          (×0.75)
+[+15m]                   = -45%          (×0.55)
+[+20m+]                  = -60% (min floor, ×0.40)
 ```
 
-Shotgun pellets use a steeper curve (50% at +3m beyond effective range).
+These multipliers match the code one-for-one (`FalloffStep5m`/`10m`/`15m`/`20m`).
+
+Shotgun pellets (`steepFalloff = true`, the Pepper Blaster) use a steeper, continuous curve instead of the steps above.
+
+::: info Code reconciliation — shotgun curve
+The shipped steep curve is a linear lerp from full damage down to a **0.2 floor (-80%) by +9m** past effective range, not a single "50% at +3m" point. The crossover to ~50% damage actually lands near **+4.5m**. `GameConstants.ShotgunFalloffHalfRange = 3f` is used as the curve's scale knob (`over / (ShotgunFalloffHalfRange × 3)`), not a literal half-damage distance. Design intent is unchanged — the Pepper Blaster still falls off hard and fast past ~12m — but tune `ShotgunFalloffHalfRange` if the exact half-point matters.
+:::
 
 ---
 
 ## Ammo System
 
-- **No ammo pickup** — magazines refill automatically after a short delay (3s) post-reload
-- Eliminates ammo-scavenging frustration while keeping reload timing as a skill
-- Infinite ammo economy keeps pace high — no one is stuck meleeing because they ran dry
+<span class="cc-status built">Implemented</span>
+
+- **No ammo pickup** — infinite reserve economy. A reload simply refills the active magazine (`WeaponController.FinishReload()`).
+- Eliminates ammo-scavenging frustration while keeping reload timing as a skill.
+- Infinite ammo economy keeps pace high — no one is stuck meleeing because they ran dry.
+- An empty magazine auto-triggers a reload on the next trigger pull.
+
+::: info Code reconciliation — the 3s refill delay
+`GameConstants.AmmoRefillDelay = 3f` is reserved for a "reserve refills 3s after a reload" model, but the current `WeaponController` runs a pure infinite-reserve loop (each reload just sets the mag back to full after `reloadTime`). The 3s delay is therefore not yet wired into a reserve pool. Functionally identical for the player today; revisit only if a finite-reserve variant is ever wanted.
+:::

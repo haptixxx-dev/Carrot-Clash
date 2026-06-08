@@ -1,0 +1,77 @@
+/* Carrot Clash docs — theme overrides.
+   Primary goal: wide design tables (momentum 9-col, characters 8-col, map/tech 7-col)
+   must fit the page instead of overflowing. We widen the overall layout and make any
+   over-wide table scroll horizontally within its own container rather than blowing
+   out the page. */
+
+:root {
+  /* Wider doc layout so most tables fit without scrolling at all. */
+  --vp-layout-max-width: 1440px;
+
+  /* Food-market brand accent (carrot orange). */
+  --vp-c-brand-1: #e8731c;
+  --vp-c-brand-2: #f0852e;
+  --vp-c-brand-3: #f59b4d;
+  --vp-c-brand-soft: rgba(232, 115, 28, 0.14);
+}
+
+/* Give the article column more room before the right-hand "On this page" aside. */
+.VPDoc.has-aside .content-container {
+  max-width: 1100px;
+}
+
+/* ---- Wide tables ----
+   Make every doc table a block-level, horizontally scrollable element. When a table
+   is wider than the content column it scrolls inside its own box (with a subtle edge)
+   instead of overflowing the page. Narrow tables still render normally and centre. */
+.vp-doc table {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 1rem 0;
+  /* momentum/characters tables are dense — tighten so more fits before scrolling. */
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.vp-doc th,
+.vp-doc td {
+  /* Allow text to wrap inside cells (keeps column count high without huge widths). */
+  white-space: normal;
+  padding: 6px 12px;
+  vertical-align: top;
+}
+
+/* Keep the very first column (usually a label/name) from collapsing too narrow. */
+.vp-doc table th:first-child,
+.vp-doc table td:first-child {
+  min-width: 7rem;
+}
+
+/* Scroll affordance on tables that do overflow. */
+.vp-doc table::-webkit-scrollbar {
+  height: 8px;
+}
+.vp-doc table::-webkit-scrollbar-thumb {
+  background: var(--vp-c-brand-soft);
+  border-radius: 4px;
+}
+
+/* Code blocks inside docs (ASCII maps in map.md / wireframes in ui-ux.md) shouldn't wrap. */
+.vp-doc div[class*='language-'] pre {
+  overflow-x: auto;
+}
+
+/* Status callout chips used in the reconciled docs (✅ built / 🚧 partial / 📦 editor-pending). */
+.cc-status {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.cc-status.built { background: #1f7a3f22; color: #2faa5b; }
+.cc-status.partial { background: #b8860022; color: #d9a300; }
+.cc-status.pending { background: #5a5a5a22; color: #9a9a9a; }

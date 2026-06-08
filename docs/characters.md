@@ -1,6 +1,19 @@
 # Characters
 
+<span class="cc-status built">Implemented</span> <span class="cc-status pending">Editor-pending</span>
+
 Four food-themed classes. Each has a fixed primary weapon, two active abilities, one passive, and a momentum-specific passive. See [Weapons](weapons.md) for weapon stats and [Momentum System](momentum-system.md) for passive detail.
+
+::: info Code status (verified 2026-06)
+All four classes and **all 16 ability behaviours** exist in code under namespace `CarrotClash` (`Assets/_Game/Characters/Abilities/Impl/`), driven by `CharacterDataSO` / `AbilityDataSO` ScriptableObjects. The exact numbers below are baked into `DataAssetGenerator.cs` and `GameConstants.cs` — design and code **agree**. Generate the data assets via the editor menu **Carrot Clash → Generate Default Data Assets** (assets are not committed).
+
+Still editor-pending: the player prefab, class-select/HUD canvases, ability VFX, audio clips, and icons. So the classes are **code-complete but not yet playable** without authored scenes/prefabs/art. Engineers: see [/dev/getting-started](/dev/getting-started) and the frozen API in `Assets/_Game/CONTRACTS.md`.
+
+Minor code refinements not in the original design text:
+- **Sprint speed** is derived as `baseMoveSpeed × 1.4` (`sprintMultiplier`), which reproduces every sprint number below exactly.
+- **Earthen Slam** knockback adds a 15° upward bounce (`GameConstants.KnockbackElevation`) on top of the 6m horizontal shove.
+- Until the input asset gains dedicated bindings, abilities use fallback keys: **Q = Active 1, E = Active 2** (see [/dev/getting-started](/dev/getting-started)).
+:::
 
 ---
 
@@ -17,6 +30,8 @@ Four food-themed classes. Each has a fixed primary weapon, two active abilities,
 
 ## Carrot — Scout / Flanker
 
+<span class="cc-status built">Implemented</span> <span class="cc-status pending">Editor-pending</span> (VFX/SFX/prefab)
+
 > *"Fast, quiet, and always behind you."*
 
 **Fantasy:** The assassin. Sprint Dash in, land a kill, Radar Pulse to find another target, disappear before anyone can respond. Carrot rewards players who study enemy positions and punish overextension.
@@ -31,12 +46,19 @@ Four food-themed classes. Each has a fixed primary weapon, two active abilities,
 
 ### Abilities
 
-| Ability | Type | Cooldown | Range | Effect | Tech notes |
-|---|---|---|---|---|---|
-| **Sprint Dash** | Active 1 | 6s | 8m | Instant directional dash; usable mid-air; preserves momentum | `CharacterController.Move()` override for 1 frame; ~0.08s duration |
-| **Radar Pulse** | Active 2 | 18s | 15m radius | Reveals all enemies within 15m through walls for 2.5s | `Physics.OverlapSphere` + `SetOutlineVisible()` on hit PlayerControllers |
-| **Silent Steps** | Passive | — | — | Footstep SFX reduced to 0 when moving at < 50% sprint speed | AudioManager mutes Footsteps source when `speed < sprintSpeed * 0.5f` |
-| **Backstab Momentum** | Momentum passive | — | — | Kills from a 180° rear arc = +2 tier instead of +1 | Dot product between killer forward and `(killer.pos - victim.pos)` < -0.1 |
+| Ability | Type | Cooldown | Range | Effect |
+|---|---|---|---|---|
+| **Sprint Dash** | Active 1 | 6s | 8m | Instant directional dash; usable mid-air; preserves momentum |
+| **Radar Pulse** | Active 2 | 18s | 15m radius | Reveals all enemies within 15m through walls for 2.5s |
+| **Silent Steps** | Passive | — | — | Footstep SFX reduced to 0 when moving at < 50% sprint speed |
+| **Backstab Momentum** | Momentum passive | — | — | Kills from a 180° rear arc = +2 tier instead of +1 |
+
+::: details Tech notes
+- **Sprint Dash** (`Ability_SprintDash`) — `CharacterController.Move()` override for ~0.08s; 8m distance.
+- **Radar Pulse** (`Ability_RadarPulse`) — `Physics.OverlapSphere` + `SetOutlineVisible()` on hit `PlayerController`s; 15m radius, 2.5s.
+- **Silent Steps** (`Passive_SilentSteps`) — AudioManager mutes the Footsteps source when `speed < sprintSpeed * 0.5f` (`SilentStepsSpeedFraction = 0.5`).
+- **Backstab Momentum** (`MomentumPassive_Backstab`) — rear-arc test lives in the spine: `GameExtensions.IsInRearArc` with dot `< -0.1` (`CarrotBackstabDot`), forwarded to `MomentumController.RegisterKill(isBackstab)` for the +2-tier grant.
+:::
 
 ### Counters & Matchups
 
@@ -63,6 +85,8 @@ Four food-themed classes. Each has a fixed primary weapon, two active abilities,
 
 ## Jalapeño — Brawler / Aggressive DPS
 
+<span class="cc-status built">Implemented</span> <span class="cc-status pending">Editor-pending</span> (VFX/SFX/prefab)
+
 > *"Gets hotter the longer the fight goes."*
 
 **Fantasy:** The room clearer. Walk into a chokepoint, detonate Spice Burst to slow everyone, lay a Heat Trail behind you to cut off retreat, and shotgun anything that survives. High floor, high ceiling — beginners can get kills, experts dominate close range.
@@ -77,12 +101,19 @@ Four food-themed classes. Each has a fixed primary weapon, two active abilities,
 
 ### Abilities
 
-| Ability | Type | Cooldown | Range / Area | Effect | Tech notes |
-|---|---|---|---|---|---|
-| **Spice Burst** | Active 1 | 12s | 4m radius, 20m throw | AOE spice grenade; slows enemies 35% for 3s, deals 15 damage | `Physics.OverlapSphere` at impact; apply `SlowEffect` component |
-| **Heat Trail** | Active 2 | 20s | 15m line, 1m wide, 3s duration | Drops fire behind Jalapeño while moving; 20 DPS to any enemy in trail | Spawn prefab trail at feet every 0.1s; each segment has `DamageZone` trigger |
-| **Burn Streak** | Passive | — | 5m radius | Each kill ignites victim; nearby enemies take 10 DPS for 2s | `OnKill`: spawn `FireAuraEffect` on victim's corpse at death position |
-| **Extended Streak** | Momentum passive | — | — | Each kill adds +5s to momentum decay timer | Add to timer in `MomentumController.RegisterKill()` |
+| Ability | Type | Cooldown | Range / Area | Effect |
+|---|---|---|---|---|
+| **Spice Burst** | Active 1 | 12s | 4m radius, 20m throw | AOE spice grenade; slows enemies 35% for 3s, deals 15 damage |
+| **Heat Trail** | Active 2 | 20s | 15m line, 1m wide, 3s duration | Drops fire behind Jalapeño while moving; 20 DPS to any enemy in trail |
+| **Burn Streak** | Passive | — | 5m radius | Each kill ignites victim; nearby enemies take 10 DPS for 2s |
+| **Extended Streak** | Momentum passive | — | — | Each kill adds +5s to momentum decay timer |
+
+::: details Tech notes
+- **Spice Burst** (`Ability_SpiceBurst`) — `Physics.OverlapSphere` at impact; `EffectSystem` slow (`SlowAmount = 0.35`, `SlowDuration = 3s`) plus 15 direct impact damage.
+- **Heat Trail** (`Ability_HeatTrail`) — fire segments at the feet; each is a `DamageZone` trigger; 20 DPS, 1m wide (0.5m radius), 3s.
+- **Burn Streak** (`Passive_BurnStreak`) — on kill, spawn a fire aura at the death position; 10 DPS over 2s, 5m radius.
+- **Extended Streak** (`MomentumPassive_ExtendedStreak`) — adds `JalapenoDecayExtension = +5s` per kill in `MomentumController`.
+:::
 
 ### Counters & Matchups
 
@@ -104,6 +135,8 @@ Four food-themed classes. Each has a fixed primary weapon, two active abilities,
 
 ## Broccoli — Support / Utility
 
+<span class="cc-status built">Implemented</span> <span class="cc-status pending">Editor-pending</span> (cover/fog prefabs, VFX/SFX)
+
 > *"Nobody picks Broccoli. Until they see what Broccoli can do."*
 
 **Fantasy:** The force multiplier. Broccoli does nothing flashy alone, but with good positioning it keeps the team alive and in fights longer than the enemy expects. Mechanically demanding — requires spatial awareness of allies at all times.
@@ -118,12 +151,19 @@ Four food-themed classes. Each has a fixed primary weapon, two active abilities,
 
 ### Abilities
 
-| Ability | Type | Cooldown | Range / Area | Effect | Tech notes |
-|---|---|---|---|---|---|
-| **Leaf Shield** | Active 1 | 15s | 3m range from placement | Deploys a 1×2m destructible cover object; 80 HP, blocks bullets | Instantiate prefab at crosshair hit point on surface; `HealthController` on object |
-| **Spore Cloud** | Active 2 | 18s | 6m radius, 4s duration | Throwable; creates a vision-blocking fog cloud at impact | Particle system with `VolumetricFog` or opaque `ParticleSystemRenderer`; enemies in cloud have `OutlineVisible = false` |
-| **Regen Aura** | Passive | — | 8m radius | Allies (not Broccoli) within 8m regenerate 2 HP/s continuously | `Physics.OverlapSphere` every 1s; call `health.Heal(2)` on each ally in range |
-| **Shared Harvest** | Momentum passive | — | 10m radius | Nearby ally kills give Broccoli 10% of kill charge | Subscribe to `PlayerEvents.OnKill`; check distance; call `momentum.AddCharge(0.1f)` |
+| Ability | Type | Cooldown | Range / Area | Effect |
+|---|---|---|---|---|
+| **Leaf Shield** | Active 1 | 15s | 3m range from placement | Deploys a 1×2m destructible cover object; 80 HP, blocks bullets |
+| **Spore Cloud** | Active 2 | 18s | 6m radius, 4s duration | Throwable; creates a vision-blocking fog cloud at impact |
+| **Regen Aura** | Passive | — | 8m radius | Allies (not Broccoli) within 8m regenerate 2 HP/s continuously |
+| **Shared Harvest** | Momentum passive | — | 10m radius | Nearby ally kills give Broccoli 10% of kill charge |
+
+::: details Tech notes
+- **Leaf Shield** (`Ability_LeafShield`) — instantiate the `DestructibleCover` prefab at the crosshair surface hit; 80 HP via `HealthController`; placement range 3m.
+- **Spore Cloud** (`Ability_SporeCloud`) — fog particle volume; enemies inside it have `OutlineVisible = false` (`VisionObscured`); 6m radius, 4s, 20m throw.
+- **Regen Aura** (`Passive_RegenAura`) — `Physics.OverlapSphere` every `RegenAuraTick = 1s`; `health.Heal(2)` on each ally in the `RegenAuraRadius = 8m` (excludes Broccoli).
+- **Shared Harvest** (`MomentumPassive_SharedHarvest`) — subscribes to the kill event, distance-checks `BroccoliHarvestRadius = 10m`, grants `BroccoliHarvestShare = 0.1` of the charge.
+:::
 
 ### Counters & Matchups
 
@@ -145,6 +185,8 @@ Four food-themed classes. Each has a fixed primary weapon, two active abilities,
 
 ## Potato — Tank / Anchor
 
+<span class="cc-status built">Implemented</span> <span class="cc-status pending">Editor-pending</span> (VFX/SFX/prefab)
+
 > *"Hard to move. Harder to kill."*
 
 **Fantasy:** The immovable object. Plant yourself on an objective, absorb everything the enemy throws, and scatter anyone who gets too close. Potato wins through presence — the enemy has to deal with you or lose the zone.
@@ -159,12 +201,19 @@ Four food-themed classes. Each has a fixed primary weapon, two active abilities,
 
 ### Abilities
 
-| Ability | Type | Cooldown | Range / Area | Effect | Tech notes |
-|---|---|---|---|---|---|
-| **Starch Armor** | Active 1 | 20s | Self | +40 temporary HP for 4s; absorbs before base HP | `health.AddTemporaryHP(40, 4f)`; distinct yellow HP bar section |
-| **Earthen Slam** | Active 2 | 16s | 4m radius, ground AoE | Jump slam; knocks enemies back 6m and staggers them for 0.5s | `Physics.OverlapSphere` at landing; `EffectSystem.ApplyKnockback()`; requires Potato to be in air briefly |
-| **Thick Skin** | Passive | — | Self | -8% incoming damage while stationary for > 1 second | Track `timeSinceLastMove`; apply damage multiplier in `TakeDamage()` |
-| **Stubborn Root** | Momentum passive | — | Self | On death, only 25% of momentum transfers to killer | Override default 50% in `MomentumController.HandleDeath()` for this class |
+| Ability | Type | Cooldown | Range / Area | Effect |
+|---|---|---|---|---|
+| **Starch Armor** | Active 1 | 20s | Self | +40 temporary HP for 4s; absorbs before base HP |
+| **Earthen Slam** | Active 2 | 16s | 4m radius, ground AoE | Jump slam; knocks enemies back 6m and staggers them for 0.5s |
+| **Thick Skin** | Passive | — | Self | -8% incoming damage while stationary for > 1 second |
+| **Stubborn Root** | Momentum passive | — | Self | On death, only 25% of momentum transfers to killer |
+
+::: details Tech notes
+- **Starch Armor** (`Ability_StarchArmor`) — `health.AddTemporaryHP(40, 4f)` (`StarchArmorAmount`/`StarchArmorDuration`); distinct yellow HP-bar section.
+- **Earthen Slam** (`Ability_EarthenSlam`) — `Physics.OverlapSphere` at the owner; `EffectSystem.ApplyKnockback` (`KnockbackDistance = 6m`, `StaggerDuration = 0.5s`, plus a 15° `KnockbackElevation` bounce); plays a short upward hop visual.
+- **Thick Skin** (`Passive_ThickSkin`) — applies a 0.08 damage-reduction multiplier in `TakeDamage()` after >1s stationary.
+- **Stubborn Root** (`MomentumPassive_StubbornRoot`) — overrides the default 0.5 transfer with `MomentumTransferPotato = 0.25` on death.
+:::
 
 ### Counters & Matchups
 
