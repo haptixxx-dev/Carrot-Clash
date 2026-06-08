@@ -69,7 +69,7 @@ Assets/
 
 ## ScriptableObjects (data layer)
 
-<span class="cc-status partial">Partial</span>: all three SO classes exist and compile. Default `.asset` instances come from the editor menu **Carrot Clash → Generate Default Data Assets** (`Editor/DataAssetGenerator.cs`) and are **not committed**; an engineer regenerates them locally.
+<span class="cc-status partial">Partial</span>: all three SO classes exist and compile. Default `.asset` instances come from the editor menu **Carrot Clash → Generate Default Data Assets** (`Editor/DataAssetGenerator.cs`) and are committed to the repo. The generator is re-runnable and overwrites in place, so GUIDs stay stable.
 
 ### `CharacterDataSO`
 

@@ -1,15 +1,15 @@
-# Carrot Clash — Editor-Authored Asset & Wiring Checklist
+# Carrot Clash - Editor-Authored Asset & Wiring Checklist
 
 Everything that must be created **inside the Unity editor** to make the committed code playable. The
 C# is done; this is the content + wiring layer it expects. Built from what the scripts actually
-reference (serialized fields, SFX keys, layer names, scene names) — so it's exhaustive and pedantic
+reference (serialized fields, SFX keys, layer names, scene names) - so it's exhaustive and pedantic
 on purpose.
 
-**How to use this:** each section has an **Owner** column — assign a person/discipline. Items are
+**How to use this:** each section has an **Owner** column - assign a person/discipline. Items are
 ordered so a clean vertical-slice path emerges: do **P0 (blockers)** first, then P1, then P2 polish.
 Check the box when the asset exists in the project AND is wired to its script.
 
-Legend — **Priority:** P0 = nothing runs without it · P1 = needed for a full match · P2 = polish/feel.
+Legend - **Priority:** P0 = nothing runs without it · P1 = needed for a full match · P2 = polish/feel.
 **Disipline:** ENG = engineer · TA = technical artist · ART = artist · SFX = audio · LD = level design · UX = UI/UX.
 
 > Cross-references: component structure → `docs/tech-architecture.md`; HUD/menus → `docs/ui-ux.md`;
@@ -18,7 +18,7 @@ Legend — **Priority:** P0 = nothing runs without it · P1 = needed for a full 
 
 ---
 
-## A. Project configuration (P0 — do first, ~30 min)
+## A. Project configuration (P0 - do first, ~30 min)
 
 | # | Item | Detail / exact values | Pri | Owner |
 |---|---|---|---|---|
@@ -31,11 +31,11 @@ Legend — **Priority:** P0 = nothing runs without it · P1 = needed for a full 
 
 ---
 
-## B. Data assets (P0 — mostly one click)
+## B. Data assets (P0 - mostly one click)
 
 | # | Item | Detail | Pri | Owner |
 |---|---|---|---|---|
-| B1 | **Run the generator** | Menu **`Carrot Clash → Generate Default Data Assets`** — creates all of B2–B5 with doc-exact numbers. | P0 | ENG |
+| B1 | **Run the generator** | Menu **`Carrot Clash → Generate Default Data Assets`** - creates all of B2-B5 with doc-exact numbers. | P0 | ENG |
 | B2 | 4× **CharacterDataSO** | Carrot / Jalapeño / Broccoli / Potato. Auto-generated. Verify HP/speed vs `docs/characters.md`. | P0 | ENG |
 | B3 | 5× **WeaponDataSO** | The Nub, Pepper Blaster, The Stem, Root Cannon, The Pip. Auto-generated. | P0 | ENG |
 | B4 | 16× **AbilityDataSO** | Names must match `AbilityFactory` map exactly. Auto-generated. Assign `icon` sprites (→ E-section) + `sfxActivate/sfxImpact/sfxLoop` keys (→ D). | P0 | ENG/UX |
@@ -48,7 +48,7 @@ Legend — **Priority:** P0 = nothing runs without it · P1 = needed for a full 
 
 ## C. Prefabs (P0/P1)
 
-### C1. Player prefab (P0 — the keystone)
+### C1. Player prefab (P0 - the keystone)
 Structure per `docs/tech-architecture.md` → "Player Prefab Structure". Build once, make class variants
 via data, not separate prefabs.
 
@@ -90,18 +90,18 @@ Assigned to `AbilityDataSO.effectPrefab` / `activationVfx`. Placeholder particle
 | PlayerSpawner | `PlayerSpawner` (+ player prefab ref) | Gameplay_Market | P0 | ENG |
 | BotSpawner | `BotSpawner` (+ prefab, data list, momentum cfg) | Gameplay_Market | P1 | ENG |
 
-### C4. Target dummy (P0 — earliest testability)
+### C4. Target dummy (P0 - earliest testability)
 `TargetDummy` on a collider (layer Player or Hitbox) with `PlayerHitbox`. Dies + resets after 3s. Lets
 you smoke-test shooting + momentum before the map exists. | P0 | ENG |
 
 ---
 
-## D. Audio assets (P1 — keys; clips can land incrementally)
+## D. Audio assets (P1 - keys; clips can land incrementally)
 
 All resolved by key through `AudioLibrary`. **Missing keys silently no-op**, so the game runs without
-audio — fill over time. Add each clip as a variant under its key in the AudioLibrary asset (B7).
+audio - fill over time. Add each clip as a variant under its key in the AudioLibrary asset (B7).
 
-### D1. Exact keys referenced in code (literal — must match)
+### D1. Exact keys referenced in code (literal - must match)
 | Key | Trigger | Pri | Owner |
 |---|---|---|---|
 | `weapon_{WeaponName}_fire` | per weapon: `weapon_The Nub_fire`, `weapon_Pepper Blaster_fire`, `weapon_The Stem_fire`, `weapon_Root Cannon_fire`, `weapon_The Pip_fire` | P1 | SFX |
@@ -120,7 +120,7 @@ audio — fill over time. Add each clip as a variant under its key in the AudioL
 | `ui_challenge_complete` | daily done | P2 | SFX |
 | `footstep_{surface}` | `footstep_stone/wood/metal/dirt` | P1 | SFX |
 
-> Ability `sfxActivate/Impact/Loop` keys are designer-chosen on each `AbilityDataSO` — pick names and
+> Ability `sfxActivate/Impact/Loop` keys are designer-chosen on each `AbilityDataSO` - pick names and
 > add matching clips (e.g. `dash_whoosh`, `heat_trail_loop`). 18 ability cues total per `docs/audio.md`.
 
 ### D2. Music + ambience
@@ -134,12 +134,12 @@ Full target inventory (~90 files) is in `docs/audio.md`.
 
 ---
 
-## E. UI assets & scene wiring (P1 — lots of serialized refs)
+## E. UI assets & scene wiring (P1 - lots of serialized refs)
 
 The HUD/menu **scripts exist**; they need a Canvas hierarchy with every serialized `Image`/`TMP_Text`/
 `RectTransform`/`CanvasGroup`/`Button` assigned. Build the prefabs/canvases and drag refs.
 
-### E1. GameplayUI canvas (HUD) — Screen Space Overlay
+### E1. GameplayUI canvas (HUD) - Screen Space Overlay
 | Widget (script) | Serialized refs it needs | Pri | Owner |
 |---|---|---|---|
 | `PlayerHUD` (root) | refs to all widgets below | P1 | UX |
@@ -166,7 +166,7 @@ The HUD/menu **scripts exist**; they need a Canvas hierarchy with every serializ
 ### E3. Icons & 2D art
 | Asset | Detail | Pri | Owner |
 |---|---|---|---|
-| 4 class icons | 🥕🌶🥦🥔 — kill feed, class select, scoreboard | P1 | ART |
+| 4 class icons | 🥕🌶🥦🥔 - kill feed, class select, scoreboard | P1 | ART |
 | 16 ability icons | one per `AbilityDataSO.icon` | P1 | ART |
 | 3 zone icons + lock | A/B/C ownership states | P1 | ART |
 | Crosshair sprites | dot/cross/circle options | P2 | UX |
@@ -175,16 +175,16 @@ The HUD/menu **scripts exist**; they need a Canvas hierarchy with every serializ
 
 ---
 
-## F. Level — The Grand Food Market (P1 — biggest art/LD lift)
+## F. Level - The Grand Food Market (P1 - biggest art/LD lift)
 
 Per `docs/map.md`. Grey-box first (P0-ish for playability), art pass later.
 
 | # | Item | Detail | Pri | Owner |
 |---|---|---|---|---|
 | F1 | **Grey-box geometry** | 3 zones + 2 spawns + 3 flank routes. Blockout only. | P1 | LD |
-| F2 | Zone A — Courtyard | ~40×30m open, 3 lanes, 8 destructible stalls + 4 carts. `CaptureZone` (radius 6, 10s, tick 1, lock 0). | P1 | LD |
-| F3 | Zone B — Indoor Market | ~30×25m enclosed, 4 entries, mezzanine. `CaptureZone` (radius 4, 8s, tick 1, lock 0). | P1 | LD |
-| F4 | Zone C — Central Stage | ~20m circular raised 3m. `CaptureZone` (radius 8, 12s, tick 2, **lock 300**). Physical barrier objects that lower at unlock. | P1 | LD |
+| F2 | Zone A - Courtyard | ~40×30m open, 3 lanes, 8 destructible stalls + 4 carts. `CaptureZone` (radius 6, 10s, tick 1, lock 0). | P1 | LD |
+| F3 | Zone B - Indoor Market | ~30×25m enclosed, 4 entries, mezzanine. `CaptureZone` (radius 4, 8s, tick 1, lock 0). | P1 | LD |
+| F4 | Zone C - Central Stage | ~20m circular raised 3m. `CaptureZone` (radius 8, 12s, tick 2, **lock 300**). Physical barrier objects that lower at unlock. | P1 | LD |
 | F5 | Flank routes | Alley East, Rooftop Catwalk (one-way drop), Underground Cellar. | P1 | LD |
 | F6 | Spawn points | 3 per team behind cover, `SpawnPoint` (team A/B), 60m apart. | P0 | LD |
 | F7 | **NavMesh bake** | AI → bake on finished blockout; NavMesh links for catwalk drop + cellar stairs. Bots need this. | P1 | LD/ENG |
@@ -195,7 +195,7 @@ Per `docs/map.md`. Grey-box first (P0-ish for playability), art pass later.
 
 ---
 
-## G. Scenes (P0 — assemble the above)
+## G. Scenes (P0 - assemble the above)
 
 | Scene | Must contain | Pri | Owner |
 |---|---|---|---|
@@ -207,7 +207,7 @@ Per `docs/map.md`. Grey-box first (P0-ish for playability), art pass later.
 
 ---
 
-## H. Build / platform (P2 — before external playtest)
+## H. Build / platform (P2 - before external playtest)
 
 | # | Item | Pri | Owner |
 |---|---|---|---|
@@ -220,11 +220,11 @@ Per `docs/map.md`. Grey-box first (P0-ish for playability), art pass later.
 
 ## Suggested division (5-person team)
 
-- **Engineer 1 (gameplay):** A1–A6, B1–B6, C1 player prefab, C3 system objects, C4 dummy, G Boot/Gameplay scenes. *(unblocks everyone)*
-- **Engineer 2 (net/build):** Network mirror wiring + NGO install, H1–H4, input-action additions (A6).
-- **Technical Artist:** C2 ability VFX, F7–F10 (NavMesh, materials, destructibles, lighting), B8 FootstepBank.
+- **Engineer 1 (gameplay):** A1-A6, B1-B6, C1 player prefab, C3 system objects, C4 dummy, G Boot/Gameplay scenes. *(unblocks everyone)*
+- **Engineer 2 (net/build):** Network mirror wiring + NGO install, H1-H4, input-action additions (A6).
+- **Technical Artist:** C2 ability VFX, F7-F10 (NavMesh, materials, destructibles, lighting), B8 FootstepBank.
 - **UI/UX:** E1 HUD, E2 menus, E3 icons coordination, MainMenu/GameplayUI scenes.
-- **Level Designer + Artist:** F1–F6 + F11 map; **Audio** (can be contractor): B7, D1–D2.
+- **Level Designer + Artist:** F1-F6 + F11 map; **Audio** (can be contractor): B7, D1-D2.
 
-**Critical path to a playable test:** A1–A4 → B1 → C1 + C4 → minimal Gameplay scene → shoot a dummy,
+**Critical path to a playable test:** A1-A4 → B1 → C1 + C4 → minimal Gameplay scene → shoot a dummy,
 watch momentum. Everything else layers on from there.

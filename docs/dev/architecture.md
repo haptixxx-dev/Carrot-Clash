@@ -87,7 +87,7 @@ Each event has a matching `Raise…` method (`RaiseKill(in KillEvent)`, `RaiseSc
 
 ## ScriptableObject data layer
 
-<span class="cc-status partial">Partial</span>. The code reads SOs everywhere, but the **asset instances are generated via an editor menu and are not committed**.
+<span class="cc-status partial">Partial</span>. The code reads SOs everywhere; the **asset instances are generated via an editor menu, then committed** (re-running overwrites in place, so references stay intact).
 
 Code never hardcodes class/weapon/ability stats. All tuning lives on ScriptableObjects:
 

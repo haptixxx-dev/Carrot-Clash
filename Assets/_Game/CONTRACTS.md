@@ -1,4 +1,4 @@
-# Carrot Clash — Frozen API Contract
+# Carrot Clash - Frozen API Contract
 
 This file is the single source of truth for the public surface of the gameplay spine. Every
 leaf file (abilities, UI, bots, network, audio, progression, feedback) MUST compile against
@@ -39,7 +39,7 @@ Scene consts: `SceneBoot`, `SceneMainMenu`, `SceneGameplay`, `SceneGameplayUI`, 
 Helpers: `bool IsZoneCUnlocked(float elapsed)`, `Team Opponent(Team)`.
 
 ## GameExtensions (static)
-- `Vector3 Flat(this Vector3)` — drops Y
+- `Vector3 Flat(this Vector3)` - drops Y
 - `float FlatDistance(Vector3 a, Vector3 b)`, `float FlatSqrDistance(...)`
 - `bool IsInRearArc(Vector3 victimForward, Vector3 victimToKiller, float dotThreshold)`
 - `float Remap(this float, inMin, inMax, outMin, outMax)`
@@ -62,7 +62,7 @@ Fields: `Killer, Victim, KillingBlowType, IsBackstab, VictimTier, IsHeadshot`.
 ctor `(ZoneId zone, Team newOwner, Team previousOwner, bool wasContested)`.
 Fields: `Zone, NewOwner, PreviousOwner, WasContested`.
 
-## GameEvents (static hub) — subscribe with `+=`, ALWAYS unsubscribe in OnDisable/OnDestroy
+## GameEvents (static hub) - subscribe with `+=`, ALWAYS unsubscribe in OnDisable/OnDestroy
 Events:
 - `Action<KillEvent> OnKill`
 - `Action<PlayerController, DamageInfo, DamageResult> OnDamageDealt` (victim, info, result)
@@ -83,7 +83,7 @@ Raisers: `RaiseKill(in KillEvent)`, `RaiseDamageDealt(pc, in DamageInfo, in Dama
 `RaiseMatchStateChanged(old,new)`, `RaiseScoreChanged(int,int)`, `RaiseMatchTimerTick(float)`, `RaiseMatchEnded(Team)`.
 `Clear()` detaches all.
 
-## PlayerController (MonoBehaviour) — the orchestrator
+## PlayerController (MonoBehaviour) - the orchestrator
 Public fields: `PlayerMovement movement; PlayerCamera cam; WeaponController weapon;
 AbilityController abilities; HealthController health; MomentumController momentum;
 Transform abilityOrigin1; Transform abilityOrigin2; Transform headTransform;`
@@ -95,7 +95,7 @@ Methods:
   `InputJump()`, `InputFire(bool)`, `InputAds(bool)`, `InputReload()`, `InputAbility(int slot)`, `InputSwapWeapon()`
 - `void Respawn(Vector3 pos, Quaternion rot)`
 - `DamageResult ApplyDamage(in DamageInfo)`
-Note: `cam` is null on remote/bot players — null-check.
+Note: `cam` is null on remote/bot players - null-check.
 
 ## HealthController (MonoBehaviour)
 Props: `int CurrentHP`, `int MaxHP`, `int TempHP`, `bool IsDead`, `bool IsFullHealth`,
@@ -128,7 +128,7 @@ Methods: `Initialize(PlayerController, CharacterDataSO)`, `SetMoveInput(Vector2)
 `ApplySlow(float amount, float duration)`, `ApplyKnockback(Vector3 force, float stagger)`,
 `ResetForRespawn(Vector3, Quaternion)`.
 
-## PlayerCamera (MonoBehaviour) — local player only
+## PlayerCamera (MonoBehaviour) - local player only
 Props: `Camera Camera`, `Transform CameraRig`, `bool ShakeEnabled {get;set;}`, `Ray AimRay`.
 Methods: `Initialize(PlayerController)`, `SetLookInput(Vector2)`, `OnJump()`, `OnLand()`,
 `FovSurge(float)`, `Shake(float magnitude, float duration, ShakeType type=Random, Vector3 direction=default)`,
@@ -162,14 +162,14 @@ Sprite icon; AbilityKind kind; float cooldown; float duration; float range; floa
 float magnitude; float magnitudeSecondary; GameObject effectPrefab; GameObject activationVfx;
 string sfxActivate, sfxImpact, sfxLoop;`
 
-## AbilityBase (abstract MonoBehaviour) — base for ALL 16 ability behaviours
+## AbilityBase (abstract MonoBehaviour) - base for ALL 16 ability behaviours
 Props: `AbilityDataSO Data`, `float Cooldown`. Protected: `PlayerController Owner`, `Ray AimRay`,
 `static int PlacementMask`, `void PlayActivationFeedback()`, `static GameObject SpawnTimed(prefab,pos,rot,lifetime)`.
 Overridables:
 - `virtual void Bind(PlayerController owner, AbilityDataSO config)` (calls OnBind)
-- `protected virtual void OnBind()` — passives subscribe to GameEvents here
-- `virtual void Unbind()` — unsubscribe here
-- `virtual bool Activate(PlayerController activator)` — return true if it fired (actives only)
+- `protected virtual void OnBind()` - passives subscribe to GameEvents here
+- `virtual void Unbind()` - unsubscribe here
+- `virtual bool Activate(PlayerController activator)` - return true if it fired (actives only)
 - `virtual void Cancel()`
 
 ## AbilityController (MonoBehaviour)
@@ -179,7 +179,7 @@ Methods: `Initialize(PlayerController, CharacterDataSO)`, `AbilityBase GetActive
 `bool ActivateAbility(int slot)`, `ResetCooldowns()`.
 
 ## AbilityFactory (static)
-`AbilityBase Attach(GameObject playerObject, AbilityDataSO config)` — maps abilityName → component type.
+`AbilityBase Attach(GameObject playerObject, AbilityDataSO config)` - maps abilityName → component type.
 The 16 concrete classes MUST be named EXACTLY (these are referenced in AbilityFactory.Map):
 Carrot: `Ability_SprintDash`, `Ability_RadarPulse`, `Passive_SilentSteps`, `MomentumPassive_Backstab`
 Jalapeño: `Ability_SpiceBurst`, `Ability_HeatTrail`, `Passive_BurnStreak`, `MomentumPassive_ExtendedStreak`
@@ -187,7 +187,7 @@ Broccoli: `Ability_LeafShield`, `Ability_SporeCloud`, `Passive_RegenAura`, `Mome
 Potato: `Ability_StarchArmor`, `Ability_EarthenSlam`, `Passive_ThickSkin`, `MomentumPassive_StubbornRoot`
 All extend `AbilityBase`, live in namespace `CarrotClash`, in `Assets/_Game/Characters/Abilities/Impl/`.
 NOTE: Some passives (SilentSteps, ThickSkin) are read directly by PlayerMovement/AudioManager via
-`PlayerController.ClassId` checks — their behaviour component can be a thin marker that exists for the
+`PlayerController.ClassId` checks - their behaviour component can be a thin marker that exists for the
 factory + future tuning. Implement them as real components but they may have minimal Activate logic.
 
 ## EffectSystem (static)

@@ -61,7 +61,7 @@ For game design (mechanics, classes, weapons, map, momentum), start at the [GDD]
 
 1. **Set up your machine.** Follow [Environment Setup](/dev/environment) (Unity 6000.4.10f1, Git LFS, IDE, .NET, Node).
 2. **Open the project.** Import in Unity Hub, wait for it to finish, and confirm the Console shows **0 errors**.
-3. **Generate data assets.** Run **`Carrot Clash → Generate Default Data Assets`** from the editor menu (these aren't committed).
+3. **Generate data assets.** Run **`Carrot Clash → Generate Default Data Assets`** from the editor menu if the `.asset` files aren't already in your checkout (the first run bootstraps them; afterwards they're committed).
 4. **Read the architecture.** Skim [Code Architecture](/dev/architecture) so you know where things live and how `GameEvents` ties them together.
 5. **Pick a task.** Grab an unclaimed item from the [Asset Checklist](/dev/assets) and check [Implementation Status](/dev/status) for context.
 

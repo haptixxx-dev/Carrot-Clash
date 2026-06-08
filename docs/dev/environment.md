@@ -252,7 +252,7 @@ Set your IDE: **Edit → Preferences → External Tools → External Script Edit
 
 ## 6. Generate gameplay data (one click)
 
-The game's data assets (classes, weapons, abilities, momentum config) are generated from the design docs, not committed. After the project opens clean:
+The game's data assets (classes, weapons, abilities, momentum config) are generated from the design docs, then committed to the repo. The first person to run the generator commits the `.asset` files. After the project opens clean:
 
 - **Top menu → `Carrot Clash → Generate Default Data Assets`**
 - then **`Carrot Clash → Validate Data`** (check Console)

@@ -1,4 +1,4 @@
-# Carrot Clash — Setup & Verification (Intern Guide)
+# Carrot Clash - Setup & Verification (Intern Guide)
 
 This is the gameplay code drop. It was written without a Unity editor (LLM-generated against a frozen
 API contract in `CONTRACTS.md`), so **nothing has been opened in the editor yet**. Your job: install
@@ -32,7 +32,7 @@ Already present and used: Input System, URP, AI Navigation (NavMesh, for bots), 
 ## 2. First-time editor setup (do this once)
 
 ### a. Layers
-Code raycasts against named layers. **Edit → Project Settings → Tags and Layers** — create these
+Code raycasts against named layers. **Edit → Project Settings → Tags and Layers** - create these
 layers if missing (exact spelling):
 - `Player`
 - `Environment`
@@ -40,11 +40,13 @@ layers if missing (exact spelling):
 - `Hitbox`
 
 Set physics collisions sanely (Player vs Environment, Hitbox on player bodies). The capture/spawn
-logic uses `OverlapSphere` on the `Player` layer — make sure player prefabs are on it.
+logic uses `OverlapSphere` on the `Player` layer - make sure player prefabs are on it.
 
 ### b. Generate data assets (one click)
-The four classes, five weapons, sixteen abilities, and momentum config are **not committed as assets** —
-they're generated from the docs so the numbers always match the GDD.
+The four classes, five weapons, sixteen abilities, and momentum config are generated from the docs
+(so the numbers always match the GDD) and committed to the repo. The generator is re-runnable and
+overwrites existing assets in place, so GUIDs stay stable across the team. If your checkout already
+has them, you can skip this; if not, run the menu once and commit the result.
 
 **Top menu → `Carrot Clash → Generate Default Data Assets`.**
 Then **`Carrot Clash → Validate Data`** and check the Console for warnings.
@@ -53,7 +55,7 @@ This creates the `CharacterDataSO` / `WeaponDataSO` / `AbilityDataSO` / `Momentu
 `Assets/_Game/.../Data/`.
 
 ### c. Player prefab
-There is no player prefab yet — build one to match the structure in `docs/tech-architecture.md`
+There is no player prefab yet - build one to match the structure in `docs/tech-architecture.md`
 ("Player Prefab Structure"):
 - Root with `CharacterController` + `PlayerController` + `PlayerMovement` + `WeaponController` +
   `AbilityController` + `HealthController` + `MomentumController`.
@@ -66,7 +68,7 @@ There is no player prefab yet — build one to match the structure in `docs/tech
 ### d. Audio
 - Create an `AudioManager` GameObject (add `AudioManager` component) in the Boot scene.
 - Create an `AudioLibrary` asset (`Create → Carrot Clash → Audio Library`), add clips keyed per the
-  list at the bottom of `CONTRACTS.md` (missing keys just no-op — safe to leave gaps early).
+  list at the bottom of `CONTRACTS.md` (missing keys just no-op - safe to leave gaps early).
 - Optional: an `AudioMixer` with exposed params `MasterVolume`, `MusicVolume`, `SfxVolume`, `VoiceVolume`.
 
 ### e. Scenes
@@ -76,7 +78,7 @@ Create/confirm three scenes named exactly: `Boot`, `MainMenu`, `Gameplay_Market`
 ### f. Input (heads-up)
 `Assets/InputSystem_Actions.inputactions` currently only has Move/Look/Attack/Sprint/Jump/Crouch.
 It's **missing Reload / ADS / Ability1 / Ability2 / SwapWeapon**. `PlayerInputBinder` has a keyboard/mouse
-fallback for those (R / RightMouse / Q / E), so it works — but cleaner to add those actions to the asset.
+fallback for those (R / RightMouse / Q / E), so it works - but cleaner to add those actions to the asset.
 
 ---
 
@@ -103,9 +105,9 @@ Tick these off. If one fails, stop and report which.
 ## 4. Architecture in 30 seconds
 
 - `Assets/_Game/CONTRACTS.md` = the frozen public API. **If you change a spine signature, update that file.**
-- Everything talks through the static `GameEvents` hub (kills, score, tiers, zones) — UI/audio/progression just subscribe.
+- Everything talks through the static `GameEvents` hub (kills, score, tiers, zones) - UI/audio/progression just subscribe.
 - Data lives on ScriptableObjects (step 2b). Code never hardcodes class/weapon stats.
-- `PlayerController` is the orchestrator; subsystems hang off it. `cam` is **null** on bots/remote players — code already null-checks it.
+- `PlayerController` is the orchestrator; subsystems hang off it. `cam` is **null** on bots/remote players - code already null-checks it.
 - Network files mirror the offline logic and only compile with `NETCODE_PRESENT`. Offline logic is the source of truth.
 
 Questions → ping the author. Once the checklist passes, we ship.

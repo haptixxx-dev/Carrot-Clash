@@ -2,11 +2,11 @@
 
 A fast-paced **3v3 / 4v4 team FPS** set in a stylized food-market world. Four vegetable hero classes
 fight over objectives on a three-zone map. The defining mechanic is a **momentum/combo system**: kills
-escalate your power across three tiers, but death transfers that charge to your killer — so every
+escalate your power across three tiers, but death transfers that charge to your killer - so every
 engagement is a risk-reward bet.
 
 - **Engine:** Unity **6000.4.10f1** (Unity 6.4), URP
-- **Networking:** Unity Netcode for GameObjects (+ Relay) — *install pending, see below*
+- **Networking:** Unity Netcode for GameObjects (+ Relay) - *install pending, see below*
 - **Targets:** PC (primary), mobile (secondary)
 - **Match:** 8 minutes · first to 500 points, or highest at the timer
 - **Design docs:** <https://cc.haptixxx.dev> (built from `/docs`)
@@ -31,7 +31,7 @@ engagement is a risk-reward bet.
 core, momentum, all 4 classes + 16 abilities, objectives + match flow, full HUD, menus, bots, audio,
 progression, and network mirrors. Built contract-first and verified by cross-file + per-file review.
 
-**Not yet done — editor-authored content** (can't be created from source alone): scenes, the player
+**Not yet done - editor-authored content** (can't be created from source alone): scenes, the player
 prefab, the map, audio clips, UI canvases, and a NavMesh. All catalogued with owners in
 **[ASSETS.md](ASSETS.md)**. Until those exist, the project compiles and the data assets generate, but
 a full match isn't playable yet.
@@ -66,7 +66,7 @@ Everything communicates through the static **`GameEvents`** hub; gameplay number
 ## Contributing
 
 - Integration branch is **`release`** (treated as main here). Branch off it, PR back.
-- **Git LFS is required** — see [DEVENV.md](DEVENV.md). Cloning without it gives broken asset stubs.
+- **Git LFS is required** - see [DEVENV.md](DEVENV.md). Cloning without it gives broken asset stubs.
 - Commit Unity `.meta` files alongside their assets.
 - Keep the C# consistent with [CONTRACTS.md](Assets/_Game/CONTRACTS.md); update that doc when the API changes.
 

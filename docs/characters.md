@@ -5,7 +5,7 @@
 Four food-themed classes. Each has a fixed primary weapon, two active abilities, one passive, and a momentum-specific passive. See [Weapons](weapons.md) for weapon stats and [Momentum System](momentum-system.md) for passive detail.
 
 ::: info Code status (verified 2026-06)
-All four classes and **all 16 ability behaviours** exist in code under namespace `CarrotClash` (`Assets/_Game/Characters/Abilities/Impl/`), driven by `CharacterDataSO` / `AbilityDataSO` ScriptableObjects. The exact numbers below are baked into `DataAssetGenerator.cs` and `GameConstants.cs`, so design and code **agree**. Generate the data assets via the editor menu **Carrot Clash → Generate Default Data Assets** (assets are not committed).
+All four classes and **all 16 ability behaviours** exist in code under namespace `CarrotClash` (`Assets/_Game/Characters/Abilities/Impl/`), driven by `CharacterDataSO` / `AbilityDataSO` ScriptableObjects. The exact numbers below are baked into `DataAssetGenerator.cs` and `GameConstants.cs`, so design and code **agree**. The data assets are generated via the editor menu **Carrot Clash → Generate Default Data Assets** and committed to the repo, so the values below ship with the project.
 
 Still editor-pending: the player prefab, class-select/HUD canvases, ability VFX, audio clips, and icons. The classes are **code-complete but not yet playable** without authored scenes, prefabs, and art. Engineers: see [/dev/getting-started](/dev/getting-started) and the frozen API in `Assets/_Game/CONTRACTS.md`.
 

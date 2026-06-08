@@ -1,13 +1,13 @@
-# Carrot Clash — Developer Environment Setup
+# Carrot Clash - Developer Environment Setup
 
 Everything you need to clone, open, build, and contribute to Carrot Clash, starting from a **blank
 machine**. Covers **Windows**, **macOS**, and **Arch Linux**. Follow your OS section top to bottom.
 
 > **Pinned versions (do not deviate):**
-> - **Unity `6000.4.10f1`** (Unity 6.4) — the project will refuse to open cleanly in another version.
-> - **Git LFS** — REQUIRED. Models/audio/video/textures are stored in LFS (73 binary file types). Cloning without it gives you broken pointer files.
-> - **Node.js 20 LTS** — only needed if you touch the design docs site (VitePress).
-> - **.NET SDK 8** — for IDE IntelliSense / Roslyn; Unity ships its own compiler but IDEs want this.
+> - **Unity `6000.4.10f1`** (Unity 6.4) - the project will refuse to open cleanly in another version.
+> - **Git LFS** - REQUIRED. Models/audio/video/textures are stored in LFS (73 binary file types). Cloning without it gives you broken pointer files.
+> - **Node.js 20 LTS** - only needed if you touch the design docs site (VitePress).
+> - **.NET SDK 8** - for IDE IntelliSense / Roslyn; Unity ships its own compiler but IDEs want this.
 
 ---
 
@@ -29,7 +29,7 @@ machine**. Covers **Windows**, **macOS**, and **Arch Linux**. Follow your OS sec
 ## 1. Windows
 
 ### 1.1 Install a package manager (recommended)
-Open **PowerShell as Administrator**. `winget` ships with Windows 10/11 — verify:
+Open **PowerShell as Administrator**. `winget` ships with Windows 10/11 - verify:
 ```powershell
 winget --version
 ```
@@ -61,7 +61,7 @@ Open **Unity Hub → Installs → Install Editor → "Archive" / "Download Archi
 **Modules to tick during install:**
 - **Microsoft Visual Studio Community** *(or skip if using Rider/VS Code)*
 - **Windows Build Support (IL2CPP)**
-- **Android Build Support** + **OpenJDK** + **Android SDK & NDK Tools** *(mobile is a secondary target — install it)*
+- **Android Build Support** + **OpenJDK** + **Android SDK & NDK Tools** *(mobile is a secondary target - install it)*
 - **Documentation** *(optional but handy)*
 
 ### 1.4 IDE (pick one)
@@ -70,7 +70,7 @@ Open **Unity Hub → Installs → Install Editor → "Archive" / "Download Archi
 winget install --id JetBrains.Rider -e
 # Option B: VS Code (free)
 winget install --id Microsoft.VisualStudioCode -e
-# Option C: Visual Studio Community (free) — installable via Unity Hub module above
+# Option C: Visual Studio Community (free) - installable via Unity Hub module above
 ```
 
 ### 1.5 .NET SDK 8 (for VS Code / Rider IntelliSense)
@@ -112,7 +112,7 @@ Open **Unity Hub → Installs → Install Editor → `6000.4.10f1`** (use the Ar
 - **Mac Build Support (IL2CPP)** *(usually preselected)*
 - **iOS Build Support** *(if testing the mobile target on iPhone)*
 - **Android Build Support** + **OpenJDK** + **Android SDK & NDK Tools** *(mobile secondary target)*
-- **Visual Studio for Mac is discontinued — use Rider or VS Code below.**
+- **Visual Studio for Mac is discontinued - use Rider or VS Code below.**
 
 > Apple Silicon (M-series): install the **Apple silicon** editor build, not Intel.
 
@@ -135,7 +135,7 @@ brew link --overwrite --force node@20
 ## 3. Arch Linux
 
 > Unity on Linux is supported but rougher. Use Unity Hub from the AUR. Arch ships rolling/newer
-> packages — pin Node if needed.
+> packages - pin Node if needed.
 
 ### 3.1 Base tools + an AUR helper
 ```bash
@@ -153,7 +153,7 @@ git clone https://aur.archlinux.org/yay.git /tmp/yay && (cd /tmp/yay && makepkg 
 yay -S unityhub
 ```
 Launch `unityhub`, sign in, then **Installs → Install Editor → `6000.4.10f1`**
-(Archive link if missing: <https://unity.com/releases/editor/archive> — pick the **Linux** build).
+(Archive link if missing: <https://unity.com/releases/editor/archive> - pick the **Linux** build).
 
 **Modules to tick:**
 - **Linux Build Support (IL2CPP)** + **Linux Build Support (Mono)**
@@ -168,9 +168,9 @@ sudo pacman -S --needed gtk3 nss libgudev libxss alsa-lib   # editor/runtime lib
 ### 3.3 IDE + .NET SDK
 ```bash
 sudo pacman -S --needed dotnet-sdk        # .NET 8 SDK
-# IDE — pick one:
+# IDE - pick one:
 yay -S rider                              # JetBrains Rider (best Unity UX)
-sudo pacman -S --needed code              # VS Code (OSS build) — or 'visual-studio-code-bin' from AUR for MS build
+sudo pacman -S --needed code              # VS Code (OSS build) - or 'visual-studio-code-bin' from AUR for MS build
 ```
 
 ### 3.4 Node.js 20 (only if editing docs)
@@ -193,7 +193,7 @@ cd Carrot-Clash
 git lfs pull        # pull the actual binary assets (skip and you get pointer stubs)
 ```
 
-Verify LFS worked — this should print real file sizes, not ~130-byte pointers:
+Verify LFS worked - this should print real file sizes, not ~130-byte pointers:
 ```bash
 git lfs ls-files | head
 ```
@@ -203,9 +203,9 @@ git lfs ls-files | head
 ## 5. Open the project
 
 1. **Unity Hub → Open → Add project from disk →** select the `Carrot-Clash` folder.
-2. Hub flags the editor version — make sure it resolves to **6000.4.10f1**. If Hub offers to "upgrade", **decline** and install the exact version instead.
+2. Hub flags the editor version - make sure it resolves to **6000.4.10f1**. If Hub offers to "upgrade", **decline** and install the exact version instead.
 3. First open is slow: Unity imports all assets and compiles scripts. Wait for the spinner to finish.
-4. **Console must show 0 errors.** (Warnings about unassigned prefab refs are expected until you wire prefabs — see `Assets/_Game/SETUP.md`.)
+4. **Console must show 0 errors.** (Warnings about unassigned prefab refs are expected until you wire prefabs - see `Assets/_Game/SETUP.md`.)
 
 Set your IDE: **Edit → Preferences → External Tools → External Script Editor** → pick Rider / VS Code / VS.
 
@@ -214,16 +214,16 @@ Set your IDE: **Edit → Preferences → External Tools → External Script Edit
 ## 6. Generate gameplay data (one click)
 
 The game's data assets (classes, weapons, abilities, momentum config) are generated from the design
-docs, not committed. After the project opens clean:
+docs and committed to the repo (the first person to run the generator commits the resulting `.asset` files). After the project opens clean:
 
 - **Top menu → `Carrot Clash → Generate Default Data Assets`**
 - then **`Carrot Clash → Validate Data`** (check Console)
 
-Full editor wiring (layers, player prefab, scenes, audio) is in **`Assets/_Game/SETUP.md`** — do that next.
+Full editor wiring (layers, player prefab, scenes, audio) is in **`Assets/_Game/SETUP.md`** - do that next.
 
 ---
 
-## 7. Docs site (optional — only if editing `/docs`)
+## 7. Docs site (optional - only if editing `/docs`)
 
 The design docs are a VitePress site deployed to GitHub Pages (cc.haptixxx.dev) via CI on push to
 `main`/`release`.
@@ -239,7 +239,7 @@ npm run docs:build     # production build into docs/.vitepress/dist
 
 - Default/integration branch is **`release`** (this repo treats it as main).
 - Branch for your work, PR back. Don't commit straight to `release` unless told.
-- **Never commit binary assets without LFS active** — run `git lfs status` before pushing if unsure.
+- **Never commit binary assets without LFS active** - run `git lfs status` before pushing if unsure.
 - Unity meta files **must** be committed alongside their assets (don't `.gitignore` them).
 
 ---
@@ -250,9 +250,9 @@ npm run docs:build     # production build into docs/.vitepress/dist
 |---|---|
 | Assets look broken / textures pink / models missing | `git lfs install` then `git lfs pull`; you cloned without LFS |
 | Hub wants to upgrade the editor version | Decline; install exact `6000.4.10f1` from the Archive |
-| Console: hundreds of compile errors on first open | Wrong editor version, or LFS pointers instead of real `.dll`/assets — re-check steps 1.2 / 4 |
+| Console: hundreds of compile errors on first open | Wrong editor version, or LFS pointers instead of real `.dll`/assets - re-check steps 1.2 / 4 |
 | IntelliSense dead in VS Code | Install **.NET SDK 8** + the **C# / Unity** VS Code extensions; reopen the `.sln` Unity generates |
-| Network/multiplayer scripts greyed out | Expected — NGO isn't installed yet; see `Assets/_Game/SETUP.md` §1 |
+| Network/multiplayer scripts greyed out | Expected - NGO isn't installed yet; see `Assets/_Game/SETUP.md` §1 |
 | Reload/ADS/ability keys don't bind | Input asset lacks those actions; `PlayerInputBinder` falls back to R / RightMouse / Q / E |
 | `git lfs` command not found (Arch) | `sudo pacman -S git-lfs && git lfs install` |
 | Long-path errors on Windows clone | `git config --global core.longpaths true` then re-clone |

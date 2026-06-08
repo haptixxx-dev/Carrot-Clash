@@ -50,7 +50,7 @@ Until A6 is done the game still plays via the hardcoded fallback keys. The input
 
 ## B. Data assets
 
-<span class="cc-status partial">Partial</span> P0, mostly one click. The generator and validators are implemented; the generated assets are **not committed**.
+<span class="cc-status partial">Partial</span> P0, mostly one click. The generator and validators are implemented. The generated assets are committed once produced (the first run bootstraps them).
 
 | # | Item | Pri | Owner |
 |---|---|---|---|

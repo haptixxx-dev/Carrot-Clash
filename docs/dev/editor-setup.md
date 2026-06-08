@@ -60,9 +60,9 @@ Set physics collisions sanely (Player vs Environment, Hitbox on player bodies). 
 
 ### b. Generate data assets (one click)
 
-<span class="cc-status built">Implemented</span>: generator menu exists; the assets it produces are not committed.
+<span class="cc-status built">Implemented</span>: generator menu exists; the assets it produces are committed once generated.
 
-The four classes, five weapons, sixteen abilities, and momentum config are **not committed as assets**. They're generated from the docs so the numbers always match the GDD.
+The four classes, five weapons, sixteen abilities, and momentum config are generated from the docs (so the numbers match the GDD) and committed to the repo.
 
 1. **Top menu → `Carrot Clash → Generate Default Data Assets`.**
 2. Then **`Carrot Clash → Validate Data`** and check the Console for warnings.
