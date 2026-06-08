@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05755fced1f952889a2bf2776bd0ee40, type: 3}
+  m_Name: Ability_SprintDash
+  m_EditorClassIdentifier: CarrotClash.Runtime::CarrotClash.AbilityDataSO
+  abilityName: Sprint Dash
+  description: Instant directional dash; usable mid-air; preserves momentum.
+  icon: {fileID: 0}
+  kind: 0
+  cooldown: 6
+  duration: 0.08
+  range: 8
+  radius: 0
+  magnitude: 8
+  magnitudeSecondary: 0
+  effectPrefab: {fileID: 0}
+  activationVfx: {fileID: 0}
+  sfxActivate: ability_carrot_dash
+  sfxImpact: 
+  sfxLoop: 

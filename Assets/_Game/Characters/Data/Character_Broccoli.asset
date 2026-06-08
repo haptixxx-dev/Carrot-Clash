@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce8f73b3d102eaaa19c2123a4ad33535, type: 3}
+  m_Name: Character_Broccoli
+  m_EditorClassIdentifier: CarrotClash.Runtime::CarrotClash.CharacterDataSO
+  classId: 2
+  characterName: Broccoli
+  tagline: Nobody picks Broccoli. Until they see what Broccoli can do.
+  difficulty: 4
+  baseHP: 100
+  baseMoveSpeed: 6
+  sprintMultiplier: 1.4
+  jumpHeight: 1.2
+  primaryWeapon: {fileID: 11400000, guid: 0a993a4e32f36c33ea85e330dfee6a5f, type: 2}
+  secondaryWeapon: {fileID: 11400000, guid: bd1a9d2d61abaa1daa8a91cf23150fd4, type: 2}
+  active1: {fileID: 11400000, guid: 258887db6115b6f12a87767321fb2918, type: 2}
+  active2: {fileID: 11400000, guid: 49fd30c887a16f5ae9b2219b266f5727, type: 2}
+  passive: {fileID: 11400000, guid: c2dcd40c46c5e253b93e8f36564ab76a, type: 2}
+  momentumPassive: {fileID: 11400000, guid: 5e97958f750e9ba73a49ee546b807b4f, type: 2}
+  primaryColor: {r: 0.15, g: 0.5, b: 0.15, a: 1}
+  accentColor: {r: 0.55, g: 0.8, b: 0.35, a: 1}
+  playerModelPrefab: {fileID: 0}

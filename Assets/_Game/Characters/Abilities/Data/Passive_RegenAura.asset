@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05755fced1f952889a2bf2776bd0ee40, type: 3}
+  m_Name: Passive_RegenAura
+  m_EditorClassIdentifier: CarrotClash.Runtime::CarrotClash.AbilityDataSO
+  abilityName: Regen Aura
+  description: Allies (not Broccoli) within 8m regenerate 2 HP/s continuously.
+  icon: {fileID: 0}
+  kind: 1
+  cooldown: 0
+  duration: 1
+  range: 0
+  radius: 8
+  magnitude: 2
+  magnitudeSecondary: 0
+  effectPrefab: {fileID: 0}
+  activationVfx: {fileID: 0}
+  sfxActivate: 
+  sfxImpact: 
+  sfxLoop: 

@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce8f73b3d102eaaa19c2123a4ad33535, type: 3}
+  m_Name: Character_Potato
+  m_EditorClassIdentifier: CarrotClash.Runtime::CarrotClash.CharacterDataSO
+  classId: 3
+  characterName: Potato
+  tagline: Hard to move. Harder to kill.
+  difficulty: 2
+  baseHP: 140
+  baseMoveSpeed: 5
+  sprintMultiplier: 1.4
+  jumpHeight: 1
+  primaryWeapon: {fileID: 11400000, guid: 44f0acfbe24210e01b75adf764b00f0e, type: 2}
+  secondaryWeapon: {fileID: 11400000, guid: bd1a9d2d61abaa1daa8a91cf23150fd4, type: 2}
+  active1: {fileID: 11400000, guid: 0995457b7a0844501a61913b3dc06902, type: 2}
+  active2: {fileID: 11400000, guid: 2907a7bffff7ced9d8623796505339a6, type: 2}
+  passive: {fileID: 11400000, guid: 486842c09b458bd65901f59d7a9cfe83, type: 2}
+  momentumPassive: {fileID: 11400000, guid: 15ea83ffea49e3452b7f15fb39a16a45, type: 2}
+  primaryColor: {r: 0.6, g: 0.45, b: 0.25, a: 1}
+  accentColor: {r: 0.85, g: 0.75, b: 0.5, a: 1}
+  playerModelPrefab: {fileID: 0}

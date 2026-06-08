@@ -26,7 +26,7 @@ namespace CarrotClash
 
         // FOV
         float baseFov = GameConstants.DefaultFov;
-        float fovTarget;
+        float fovTarget = GameConstants.DefaultFov;
         float fovVelocity;
         float fovExtra;            // transient additive (dash surge), decays
 
@@ -77,18 +77,17 @@ namespace CarrotClash
         void ApplyFov()
         {
             if (mainCamera == null) return;
-            float target = fovTarget + fovExtra;
-            float current = Mathf.SmoothDamp(mainCamera.fieldOfView, target, ref fovVelocity, GameConstants.SprintFovTime);
-            mainCamera.fieldOfView = current;
-            fovExtra = Mathf.MoveTowards(fovExtra, 0f, (GameConstants.DashFovSurge / 0.2f) * Time.deltaTime);
 
-            // Resolve target from movement state.
             if (owner != null && owner.movement != null)
             {
                 if (owner.weapon != null && owner.weapon.IsAiming) fovTarget = GameConstants.AdsFov;
                 else if (owner.movement.IsSprinting) fovTarget = GameConstants.SprintFov;
                 else fovTarget = baseFov;
             }
+
+            fovExtra = Mathf.MoveTowards(fovExtra, 0f, (GameConstants.DashFovSurge / 0.2f) * Time.deltaTime);
+            float current = Mathf.SmoothDamp(mainCamera.fieldOfView, fovTarget + fovExtra, ref fovVelocity, GameConstants.SprintFovTime);
+            mainCamera.fieldOfView = current;
         }
 
         void ApplyBob()

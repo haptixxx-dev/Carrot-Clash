@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05755fced1f952889a2bf2776bd0ee40, type: 3}
+  m_Name: Ability_SpiceBurst
+  m_EditorClassIdentifier: CarrotClash.Runtime::CarrotClash.AbilityDataSO
+  abilityName: Spice Burst
+  description: AOE spice grenade; slows enemies 35% for 3s and deals 15 damage.
+  icon: {fileID: 0}
+  kind: 0
+  cooldown: 12
+  duration: 3
+  range: 20
+  radius: 4
+  magnitude: 0.35
+  magnitudeSecondary: 15
+  effectPrefab: {fileID: 0}
+  activationVfx: {fileID: 0}
+  sfxActivate: ability_jalapeno_spice
+  sfxImpact: ability_jalapeno_spice_impact
+  sfxLoop: 

@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce8f73b3d102eaaa19c2123a4ad33535, type: 3}
+  m_Name: Character_Carrot
+  m_EditorClassIdentifier: CarrotClash.Runtime::CarrotClash.CharacterDataSO
+  classId: 0
+  characterName: Carrot
+  tagline: Fast, quiet, and always behind you.
+  difficulty: 3
+  baseHP: 90
+  baseMoveSpeed: 7.5
+  sprintMultiplier: 1.4
+  jumpHeight: 1.4
+  primaryWeapon: {fileID: 11400000, guid: 1df5c8c342122d0a398c8187e906b28a, type: 2}
+  secondaryWeapon: {fileID: 11400000, guid: bd1a9d2d61abaa1daa8a91cf23150fd4, type: 2}
+  active1: {fileID: 11400000, guid: 806eaf48465e68bffa00dbd3e654d885, type: 2}
+  active2: {fileID: 11400000, guid: 356111eea6efefb14996d13b645c0328, type: 2}
+  passive: {fileID: 11400000, guid: 1fbf011a3b5d7aef595ba419e38c4ef3, type: 2}
+  momentumPassive: {fileID: 11400000, guid: ba917d8ee1bc3e658aa3c74bad08db75, type: 2}
+  primaryColor: {r: 1, g: 0.5, b: 0.1, a: 1}
+  accentColor: {r: 0.2, g: 0.7, b: 0.2, a: 1}
+  playerModelPrefab: {fileID: 0}
