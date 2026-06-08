@@ -1,26 +1,26 @@
 # Implementation Status
 
 A live dashboard reconciling the [design docs](/gdd) against the actual codebase. The
-gameplay spine is **code-complete and verified against the [frozen API contract](/dev/architecture)** —
+gameplay spine is **code-complete and verified against the [frozen API contract](/dev/architecture)**:
 97 C# scripts under `Assets/_Game/`, all compiling against `CONTRACTS.md`. But this is a
-*code drop*: it has never been opened in the editor, so **no scenes, prefabs, art, audio,
+*code drop*. It has never been opened in the editor, so **no scenes, prefabs, art, audio,
 NavMesh, or data assets are committed yet.**
 
-::: warning READ THIS FIRST — what "Implemented" means here
+::: warning READ THIS FIRST: what "Implemented" means here
 "Implemented" means **the C# logic exists and is verified against the contract**, not that
 it is playable on screen. Nothing is fully playable today because every system still needs
-its scenes / prefabs / art / audio wired in the Unity editor. Treat the legend below
+its scenes, prefabs, art, audio, and NavMesh wired in the Unity editor. Treat the legend below
 literally.
 :::
 
 ## Legend
 
-- <span class="cc-status built">Implemented</span> — code exists and is verified against `CONTRACTS.md`.
-- <span class="cc-status partial">Partial</span> — code exists but needs editor wiring, missing input bindings, or a dormant package.
-- <span class="cc-status pending">Editor-pending</span> — needs editor-authored content (scenes / prefabs / art / audio / NavMesh).
+- <span class="cc-status built">Implemented</span>: code exists and is verified against `CONTRACTS.md`.
+- <span class="cc-status partial">Partial</span>: code exists but needs editor wiring, missing input bindings, or a dormant package.
+- <span class="cc-status pending">Editor-pending</span>: needs editor-authored content (scenes / prefabs / art / audio / NavMesh).
 
 ::: info Source of truth
-This page summarises the canonical engineering docs at the repo root —
+This page summarises the canonical engineering docs at the repo root:
 `README.md`, `DEVENV.md`, `ASSETS.md`, `Assets/_Game/SETUP.md`, `Assets/_Game/CONTRACTS.md`.
 Where a number disagrees with the GDD, the code wins and is noted below.
 :::
@@ -34,7 +34,7 @@ Where a number disagrees with the GDD, the code wins and is noted below.
 | System | Design doc | Code status | Notes |
 |---|---|---|---|
 | FPS movement (WASD, look, jump, sprint, crouch) | [Characters](/characters) | <span class="cc-status built">Implemented</span> | `PlayerMovement` on `CharacterController` (not Rigidbody, per [milestones](/milestones)). Gravity `-22`. |
-| First-person camera (mouse look, FOV, bob) | [Game Feel](/game-feel) | <span class="cc-status built">Implemented</span> | `PlayerCamera`. Default FOV `90`. `cam` is null on bots/remote — null-checked. |
+| First-person camera (mouse look, FOV, bob) | [Game Feel](/game-feel) | <span class="cc-status built">Implemented</span> | `PlayerCamera`. Default FOV `90`. `cam` is null on bots/remote, so it is null-checked. |
 | Hitscan weapons (falloff + headshots) | [Weapons](/weapons) | <span class="cc-status built">Implemented</span> | `WeaponController` + `WeaponDataSO`. Headshot mult via `PlayerHitbox.IsHead`. |
 | Health + temporary HP | [Characters](/characters) | <span class="cc-status built">Implemented</span> | `HealthController`; temp-HP layer for Starch Armor / Leaf Shield. |
 | Hitboxes (head/body) | [Weapons](/weapons) | <span class="cc-status built">Implemented</span> | `PlayerHitbox` on `Hitbox` layer; head collider flagged in prefab. |
@@ -45,10 +45,10 @@ Where a number disagrees with the GDD, the code wins and is noted below.
 
 | System | Design doc | Code status | Notes |
 |---|---|---|---|
-| Momentum tiers 0–3 (Cold→Warm→Hot→OnFire) | [Momentum System](/momentum-system) | <span class="cc-status built">Implemented</span> | `MomentumController` + `MomentumConfigSO`. `OnTierChanged` event. |
+| Momentum tiers 0-3 (Cold→Warm→Hot→OnFire) | [Momentum System](/momentum-system) | <span class="cc-status built">Implemented</span> | `MomentumController` + `MomentumConfigSO`. `OnTierChanged` event. |
 | Decay | [Momentum System](/momentum-system) | <span class="cc-status built">Implemented</span> | Decay interval **12s** (`MomentumDecayInterval`). |
 | Tier transfer on kill | [Momentum System](/momentum-system) | <span class="cc-status built">Implemented</span> | Drives `ScoreKillOnFire` (8 vs 5 base) and class passives. |
-| Class momentum passives (all 4) | [Momentum System](/momentum-system) | <span class="cc-status built">Implemented</span> | Backstab / ExtendedStreak / SharedHarvest / StubbornRoot — see classes below. |
+| Class momentum passives (all 4) | [Momentum System](/momentum-system) | <span class="cc-status built">Implemented</span> | Backstab / ExtendedStreak / SharedHarvest / StubbornRoot; see classes below. |
 
 ### Classes & abilities
 
@@ -99,7 +99,7 @@ VFX/SFX and ability-origin indicators are <span class="cc-status pending">Editor
 |---|---|---|---|
 | Bot brain (FSM) | [Tech Architecture](/tech-architecture) | <span class="cc-status built">Implemented</span> | `CombatBotBrain` + `DummyBrain` via `IBotBrain`; states Idle/MoveToObjective/Capture/FightNearbyEnemy/Retreat. |
 | Bot controller + spawner | [Tech Architecture](/tech-architecture) | <span class="cc-status built">Implemented</span> | `BotController`, `BotSpawner` fills empty slots. |
-| NavMesh | [Map](/map) | <span class="cc-status pending">Editor-pending</span> | AI Navigation package present; **NavMesh must be baked** on the (not-yet-built) map before bots path. |
+| NavMesh | [Map](/map) | <span class="cc-status pending">Editor-pending</span> | AI Navigation package present, but the **NavMesh must be baked** on the (not-yet-built) map before bots path. |
 
 ### Audio
 
@@ -115,7 +115,7 @@ VFX/SFX and ability-origin indicators are <span class="cc-status pending">Editor
 | System | Design doc | Code status | Notes |
 |---|---|---|---|
 | XP + levels | [Progression](/progression) | <span class="cc-status built">Implemented</span> | `XPManager`, `ProgressionService`, `ProgressionData`. |
-| Battle pass (stub) | [Progression](/progression) | <span class="cc-status built">Implemented</span> | `BattlePassService` — tiers/progress, no purchasing (per vertical-slice scope). |
+| Battle pass (stub) | [Progression](/progression) | <span class="cc-status built">Implemented</span> | `BattlePassService` tracks tiers and progress, no purchasing (per vertical-slice scope). |
 | Daily challenges | [Progression](/progression) | <span class="cc-status built">Implemented</span> | `ChallengeSystem`. |
 | Save / load | [Progression](/progression) | <span class="cc-status built">Implemented</span> | `SaveSystem` persists progression. |
 | Battle pass / challenge UI art | [Progression](/progression) | <span class="cc-status pending">Editor-pending</span> | UI canvases + icons not authored. |
@@ -125,13 +125,13 @@ VFX/SFX and ability-origin indicators are <span class="cc-status pending">Editor
 | System | Design doc | Code status | Notes |
 |---|---|---|---|
 | Networked player / health / momentum / ability | [Tech Architecture](/tech-architecture) | <span class="cc-status partial">Partial</span> | All four mirrors written behind `#if NETCODE_PRESENT` and dormant. |
-| Networked capture zone / game mode | [Tech Architecture](/tech-architecture) | <span class="cc-status partial">Partial</span> | `CaptureZoneNetwork`, `GameModeNetworkManager`, `ConnectionManager` — same gate. |
-| Netcode for GameObjects (NGO) | [Milestones](/milestones) Phase 4 | <span class="cc-status pending">Editor-pending</span> | **Package NOT installed.** Network layer is dormant until `com.unity.netcode.gameobjects` is added — then the `Network/` files light up. |
+| Networked capture zone / game mode | [Tech Architecture](/tech-architecture) | <span class="cc-status partial">Partial</span> | `CaptureZoneNetwork`, `GameModeNetworkManager`, `ConnectionManager` sit behind the same gate. |
+| Netcode for GameObjects (NGO) | [Milestones](/milestones) Phase 4 | <span class="cc-status pending">Editor-pending</span> | **Package NOT installed.** Network layer is dormant until `com.unity.netcode.gameobjects` is added, at which point the `Network/` files light up. |
 | Unity Relay / Lobby / Authentication | [Milestones](/milestones) Phase 4 | <span class="cc-status pending">Editor-pending</span> | Not installed. Relay (join codes / NAT) and Lobby (room browser) are optional installs. |
 | Lag compensation | [Milestones](/milestones) Phase 4 | <span class="cc-status pending">Editor-pending</span> | Server-side hitscan history buffer not yet built (Phase 4 work). |
 
 ::: tip Offline-first
-Everything except online play works with **zero package installs** — offline + bots is the
+Everything except online play works with **zero package installs**. Offline + bots is the
 source of truth, and the network files only compile once NGO is present. See
 [Editor Setup](/dev/editor-setup) and `SETUP.md` §1.
 :::
@@ -142,25 +142,25 @@ source of truth, and the network files only compile once NGO is present. See
 |---|---|---|---|
 | Destructible cover | [Map](/map) | <span class="cc-status built">Implemented</span> | `DestructibleCover`. |
 | Damage zones / vision blockers | [Map](/map) | <span class="cc-status built">Implemented</span> | `DamageZone`, `VisionObscured` (Spore Cloud / Radar Pulse interplay). |
-| The Grand Food Market (grey-box, art, NavMesh) | [Map](/map) | <span class="cc-status pending">Editor-pending</span> | No geometry committed: Zones A/B/C, lanes, flanking routes, both spawns all need blockout → art → bake. |
+| The Grand Food Market (grey-box, art, NavMesh) | [Map](/map) | <span class="cc-status pending">Editor-pending</span> | No geometry committed. Zones A/B/C, lanes, flanking routes, and both spawns all need blockout → art → bake. |
 
 ---
 
 ## Data & engine notes
 
 - **Data assets** (4 `CharacterDataSO`, 5 `WeaponDataSO`, 16 `AbilityDataSO`, `MomentumConfigSO`)
-  are **generated from the docs**, not committed — run `Carrot Clash → Generate Default Data Assets`,
+  are **generated from the docs**, not committed. Run `Carrot Clash → Generate Default Data Assets`,
   then `Carrot Clash → Validate Data` (see [Editor Setup](/dev/editor-setup)). This keeps the
   numbers matching the GDD.
 - **Engine** pinned to **Unity 6000.4.10f1**, URP 17.4, Input System 1.19.
 - **Namespace** `CarrotClash` (`.Audio`, `.Net`, `.EditorTools` sub-namespaces). The public
-  surface is frozen in `Assets/_Game/CONTRACTS.md` — see [Code Architecture](/dev/architecture).
+  surface is frozen in `Assets/_Game/CONTRACTS.md`; see [Code Architecture](/dev/architecture).
 
 ---
 
 ## What "done" looks like
 
-Per [Milestones — Definition of "Vertical Slice"](/milestones), the slice is done when it:
+Per [Milestones - Definition of "Vertical Slice"](/milestones), the slice is done when it:
 
 - Represents the final game's quality and feel in **every system it contains**.
 - Is playable by **someone with no prior knowledge**.

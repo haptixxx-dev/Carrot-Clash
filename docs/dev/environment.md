@@ -1,24 +1,24 @@
-# Developer Environment Setup
+# Developer environment setup
 
-Everything you need to clone, open, build, and contribute to Carrot Clash, starting from a **blank machine**. Covers **Windows**, **macOS**, and **Arch Linux**. Follow your OS section top to bottom.
+Everything you need to clone, open, build, and contribute to Carrot Clash, starting from a blank machine. Covers Windows, macOS, and Arch Linux. Follow your OS section top to bottom.
 
 ::: info SOURCE OF TRUTH
 This page mirrors [`/DEVENV.md`](https://github.com/haptixxx-dev/Carrot-Clash/blob/release/DEVENV.md) at the repo root, which is the canonical version. If the two ever disagree, the repo-root file wins. Related: [Editor Setup & Wiring](/dev/editor-setup) and [Code Architecture](/dev/architecture).
 :::
 
-::: warning PINNED VERSIONS — DO NOT DEVIATE
-- **Unity `6000.4.10f1`** (Unity 6.4) — the project will refuse to open cleanly in another version. If Unity Hub offers to "upgrade", **decline**.
-- **Node.js 20 LTS** — only needed if you touch the design docs site (VitePress).
-- **.NET SDK 8** — for IDE IntelliSense / Roslyn; Unity ships its own compiler but IDEs want this.
+::: warning PINNED VERSIONS: DO NOT DEVIATE
+- **Unity `6000.4.10f1`** (Unity 6.4). The project will refuse to open cleanly in another version. If Unity Hub offers to "upgrade", **decline**.
+- **Node.js 20 LTS**, only needed if you touch the design docs site (VitePress).
+- **.NET SDK 8** for IDE IntelliSense / Roslyn. Unity ships its own compiler but IDEs want this.
 :::
 
 ::: warning GIT LFS IS REQUIRED
-**Git LFS must be installed and active before you clone.** Models, audio, video, and textures are stored in LFS (73 binary file types). Cloning without it leaves you with broken ~130-byte pointer stubs instead of real assets — textures go pink, models vanish, `.dll`s won't load. Run `git lfs install` once per machine, then `git lfs pull` after cloning.
+**Git LFS must be installed and active before you clone.** Models, audio, video, and textures are stored in LFS (73 binary file types). Cloning without it leaves you with broken ~130-byte pointer stubs instead of real assets: textures go pink, models vanish, `.dll`s won't load. Run `git lfs install` once per machine, then `git lfs pull` after cloning.
 :::
 
 ---
 
-## 0. TL;DR — what gets installed
+## 0. TL;DR: what gets installed
 
 | Tool | Why | Required? |
 |---|---|---|
@@ -29,7 +29,7 @@ This page mirrors [`/DEVENV.md`](https://github.com/haptixxx-dev/Carrot-Clash/bl
 | **An IDE** (Rider / VS / VS Code) | Edit C#, IntelliSense, debug | Required (pick one) |
 | **.NET SDK 8** | Roslyn/IntelliSense backend | Required for VS Code/Rider |
 | **Node.js 20 + npm** | Build the docs site | Only if editing `/docs` |
-| **(later) Netcode for GameObjects** | Online multiplayer | When doing netcode (in-editor via Package Manager — see [Editor Setup](/dev/editor-setup)) |
+| **(later) Netcode for GameObjects** | Online multiplayer | When doing netcode (in-editor via Package Manager, see [Editor Setup](/dev/editor-setup)) |
 
 ::: tip Netcode is dormant
 Netcode for GameObjects (and Relay/Lobby) is **not installed yet**. The network layer lives behind a `NETCODE_PRESENT` compile flag and stays dormant until you add the package. You don't need it to build or run the single-machine project.
@@ -41,7 +41,7 @@ Netcode for GameObjects (and Relay/Lobby) is **not installed yet**. The network 
 
 ### 1.1 Install a package manager (recommended)
 
-Open **PowerShell as Administrator**. `winget` ships with Windows 10/11 — verify:
+Open **PowerShell as Administrator**. `winget` ships with Windows 10/11. Verify:
 
 ```powershell
 winget --version
@@ -60,7 +60,7 @@ Then **once per machine**:
 git lfs install
 ```
 
-Configure line endings for the cross-platform team (Unity YAML wants LF, handled by `.gitattributes`, but set the safe default):
+Configure line endings for the cross-platform team. Unity YAML wants LF and `.gitattributes` handles that, but set the safe default anyway:
 
 ```powershell
 git config --global core.autocrlf input
@@ -79,7 +79,7 @@ Open **Unity Hub → Installs → Install Editor → "Archive" / "Download Archi
 
 - **Microsoft Visual Studio Community** *(or skip if using Rider/VS Code)*
 - **Windows Build Support (IL2CPP)**
-- **Android Build Support** + **OpenJDK** + **Android SDK & NDK Tools** *(mobile is a secondary target — install it)*
+- **Android Build Support** + **OpenJDK** + **Android SDK & NDK Tools** *(mobile is a secondary target, install it)*
 - **Documentation** *(optional but handy)*
 
 ### 1.4 IDE (pick one)
@@ -89,7 +89,7 @@ Open **Unity Hub → Installs → Install Editor → "Archive" / "Download Archi
 winget install --id JetBrains.Rider -e
 # Option B: VS Code (free)
 winget install --id Microsoft.VisualStudioCode -e
-# Option C: Visual Studio Community (free) — installable via Unity Hub module above
+# Option C: Visual Studio Community (free) - installable via Unity Hub module above
 ```
 
 ### 1.5 .NET SDK 8 (for VS Code / Rider IntelliSense)
@@ -118,7 +118,7 @@ Follow the post-install note to add `brew` to your PATH (Apple Silicon: `/opt/ho
 
 ### 2.2 Git + Git LFS
 
-macOS ships Git, but install a current one + LFS:
+macOS ships Git, but install a current one plus LFS:
 
 ```bash
 brew install git git-lfs
@@ -139,7 +139,7 @@ Open **Unity Hub → Installs → Install Editor → `6000.4.10f1`** (use the Ar
 - **Mac Build Support (IL2CPP)** *(usually preselected)*
 - **iOS Build Support** *(if testing the mobile target on iPhone)*
 - **Android Build Support** + **OpenJDK** + **Android SDK & NDK Tools** *(mobile secondary target)*
-- **Visual Studio for Mac is discontinued — use Rider or VS Code below.**
+- **Visual Studio for Mac is discontinued. Use Rider or VS Code below.**
 
 ::: tip Apple Silicon (M-series)
 Install the **Apple silicon** editor build, not the Intel one.
@@ -166,7 +166,7 @@ brew link --overwrite --force node@20
 ## 3. Arch Linux
 
 ::: warning Unity on Linux is rougher
-Unity on Linux is supported but less polished than Windows/macOS. Use Unity Hub from the AUR. Arch ships rolling/newer packages — pin Node if needed.
+Unity on Linux is supported but less polished than Windows/macOS. Use Unity Hub from the AUR. Arch ships rolling/newer packages, so pin Node if needed.
 :::
 
 ### 3.1 Base tools + an AUR helper
@@ -187,7 +187,7 @@ git clone https://aur.archlinux.org/yay.git /tmp/yay && (cd /tmp/yay && makepkg 
 yay -S unityhub
 ```
 
-Launch `unityhub`, sign in, then **Installs → Install Editor → `6000.4.10f1`** (Archive link if missing: <https://unity.com/releases/editor/archive> — pick the **Linux** build).
+Launch `unityhub`, sign in, then **Installs → Install Editor → `6000.4.10f1`** (Archive link if missing: <https://unity.com/releases/editor/archive>, pick the **Linux** build).
 
 **Modules to tick:**
 
@@ -205,9 +205,9 @@ sudo pacman -S --needed gtk3 nss libgudev libxss alsa-lib   # editor/runtime lib
 
 ```bash
 sudo pacman -S --needed dotnet-sdk        # .NET 8 SDK
-# IDE — pick one:
+# IDE - pick one:
 yay -S rider                              # JetBrains Rider (best Unity UX)
-sudo pacman -S --needed code              # VS Code (OSS build) — or 'visual-studio-code-bin' from AUR for MS build
+sudo pacman -S --needed code              # VS Code (OSS build) - or 'visual-studio-code-bin' from AUR for MS build
 ```
 
 ### 3.4 Node.js 20 (only if editing docs)
@@ -231,7 +231,7 @@ cd Carrot-Clash
 git lfs pull        # pull the actual binary assets (skip and you get pointer stubs)
 ```
 
-Verify LFS worked — this should print real file sizes, not ~130-byte pointers:
+Verify LFS worked. This should print real file sizes, not ~130-byte pointers:
 
 ```bash
 git lfs ls-files | head
@@ -242,9 +242,9 @@ git lfs ls-files | head
 ## 5. Open the project
 
 1. **Unity Hub → Open → Add project from disk →** select the `Carrot-Clash` folder.
-2. Hub flags the editor version — make sure it resolves to **6000.4.10f1**. If Hub offers to "upgrade", **decline** and install the exact version instead.
+2. Hub flags the editor version. Make sure it resolves to **6000.4.10f1**. If Hub offers to "upgrade", **decline** and install the exact version instead.
 3. First open is slow: Unity imports all assets and compiles scripts. Wait for the spinner to finish.
-4. **Console must show 0 errors.** (Warnings about unassigned prefab refs are expected until you wire prefabs — see [Editor Setup & Wiring](/dev/editor-setup).)
+4. **Console must show 0 errors.** Warnings about unassigned prefab refs are expected until you wire prefabs (see [Editor Setup & Wiring](/dev/editor-setup)).
 
 Set your IDE: **Edit → Preferences → External Tools → External Script Editor** → pick Rider / VS Code / VS.
 
@@ -257,11 +257,11 @@ The game's data assets (classes, weapons, abilities, momentum config) are genera
 - **Top menu → `Carrot Clash → Generate Default Data Assets`**
 - then **`Carrot Clash → Validate Data`** (check Console)
 
-Full editor wiring (layers, player prefab, scenes, audio) is covered in [Editor Setup & Wiring](/dev/editor-setup) — do that next.
+Full editor wiring (layers, player prefab, scenes, audio) is covered in [Editor Setup & Wiring](/dev/editor-setup). Do that next.
 
 ---
 
-## 7. Docs site (optional — only if editing `/docs`)
+## 7. Docs site (optional, only if editing `/docs`)
 
 The design docs are this VitePress site, deployed to GitHub Pages (cc.haptixxx.dev) via CI on push to `main`/`release`.
 
@@ -277,7 +277,7 @@ npm run docs:build     # production build into docs/.vitepress/dist
 
 - Default/integration branch is **`release`** (this repo treats it as main).
 - Branch for your work, PR back. Don't commit straight to `release` unless told.
-- **Never commit binary assets without LFS active** — run `git lfs status` before pushing if unsure.
+- **Never commit binary assets without LFS active.** Run `git lfs status` before pushing if unsure.
 - Unity meta files **must** be committed alongside their assets (don't `.gitignore` them).
 
 ---
@@ -288,9 +288,9 @@ npm run docs:build     # production build into docs/.vitepress/dist
 |---|---|
 | Assets look broken / textures pink / models missing | `git lfs install` then `git lfs pull`; you cloned without LFS |
 | Hub wants to upgrade the editor version | Decline; install exact `6000.4.10f1` from the Archive |
-| Console: hundreds of compile errors on first open | Wrong editor version, or LFS pointers instead of real `.dll`/assets — re-check steps 1.2 / 4 |
+| Console: hundreds of compile errors on first open | Wrong editor version, or LFS pointers instead of real `.dll`/assets; re-check steps 1.2 / 4 |
 | IntelliSense dead in VS Code | Install **.NET SDK 8** + the **C# / Unity** VS Code extensions; reopen the `.sln` Unity generates |
-| Network/multiplayer scripts greyed out | Expected — NGO isn't installed yet; see [Editor Setup](/dev/editor-setup) |
+| Network/multiplayer scripts greyed out | Expected; NGO isn't installed yet (see [Editor Setup](/dev/editor-setup)) |
 | Reload/ADS/ability keys don't bind | Input asset lacks those actions; `PlayerInputBinder` falls back to R / RightMouse / Q / E |
 | `git lfs` command not found (Arch) | `sudo pacman -S git-lfs && git lfs install` |
 | Long-path errors on Windows clone | `git config --global core.longpaths true` then re-clone |
@@ -312,4 +312,4 @@ node --version         # v20.x   (only if doing docs)
 - [ ] Project opens with **0 Console errors** after import.
 - [ ] `Carrot Clash → Generate Default Data Assets` runs without exceptions.
 
-You're set. Next: [Editor Setup & Wiring](/dev/editor-setup) for editor wiring + the smoke-test checklist.
+You're set. Next: [Editor Setup & Wiring](/dev/editor-setup) for editor wiring plus the smoke-test checklist.
