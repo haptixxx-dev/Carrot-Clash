@@ -1,0 +1,43 @@
+{
+    "name": "CarrotClash.Net",
+    "rootNamespace": "CarrotClash.Net",
+    "references": [
+        "CarrotClash.Runtime",
+        "Unity.Netcode.Runtime",
+        "Unity.Netcode.Components",
+        "Unity.Networking.Transport",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "NETCODE_PRESENT"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.netcode.gameobjects",
+            "expression": "1.0.0",
+            "define": "NETCODE_PRESENT"
+        },
+        {
+            "name": "com.unity.services.relay",
+            "expression": "1.0.0",
+            "define": "UGS_RELAY"
+        },
+        {
+            "name": "com.unity.services.lobby",
+            "expression": "1.0.0",
+            "define": "UGS_LOBBY"
+        },
+        {
+            "name": "com.unity.services.authentication",
+            "expression": "1.0.0",
+            "define": "UGS_AUTH"
+        }
+    ],
+    "noEngineReferences": false
+}
